@@ -31,6 +31,20 @@ public class DBReader {
             String[] values = str[1].split(",");
             instr.transactionId = values[0];
             instr.variableName = values[1];
+        }else if(transactionType.equalsIgnoreCase(TransactionType.fail.getTransactionType()) ||
+                transactionType.equalsIgnoreCase(TransactionType.recover.getTransactionType())){
+            instr.transactionType = TransactionType.fail;
+            if(transactionType.equalsIgnoreCase(TransactionType.recover.getTransactionType())){
+                instr.transactionType = TransactionType.recover;
+            }
+            String[] values = str[1].split(",");
+            instr.site = Integer.parseInt(values[0]);
+        }else if(transactionType.equalsIgnoreCase(TransactionType.dump.getTransactionType())){
+            instr.transactionType = TransactionType.dump;
         }
+
+        return instr;
     }
+
+    //TODO PRINT_ALL_VARIABLES, PRINT_VARIABLES, PRINT_SITE
 }
