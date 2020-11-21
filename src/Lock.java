@@ -2,7 +2,8 @@ public class Lock {
     LockType lockType;
     Transaction transaction;
 
-    Lock(LockType lockType){
+    Lock(Transaction transaction, LockType lockType){
         this.lockType = lockType;
+        this.transaction = transaction;
     }
 }
