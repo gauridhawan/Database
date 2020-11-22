@@ -1,3 +1,7 @@
 public enum TransactionStatus {
-    RUNNING, WAITING, ABORTED, COMMITTED;
+    RUNNING,
+    WAITING,
+    ABORTED,
+    COMMITTED;
+
 }
