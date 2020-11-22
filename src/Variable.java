@@ -5,9 +5,17 @@ public class Variable{
     String name;
     int currentSite;
 
-    Variable(String name){
+    Variable(String name, int value){
         this.name = name;
+        this.value = value;
         this.index = Integer.parseInt(name.substring(1,name.length()));
+    }
+
+    Variable(String name, int value, int currentSite){
+        this.name = name;
+        this.value = value;
+        this.index = Integer.parseInt(name.substring(1,name.length()));
+        this.currentSite = currentSite;
     }
 
     int getSites(){
