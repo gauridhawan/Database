@@ -5,8 +5,9 @@ public class Transaction {
 
     String name;
     TransactionStatus transactionStatus;
-    List<Site> siteList;
+    List<Site> sitesAccessed;
     Map<String, Integer> uncommittedVariables;
+    int startTime;
     boolean isReadOnly;
 
 
@@ -34,12 +35,12 @@ public class Transaction {
         this.transactionStatus = transactionStatus;
     }
 
-    public List<Site> getSiteList() {
-        return siteList;
+    public List<Site> getSitesAccessed() {
+        return sitesAccessed;
     }
 
-    public void setSiteList(List<Site> siteList) {
-        this.siteList = siteList;
+    public void setSitesAccessed(List<Site> sitesAccessed) {
+        this.sitesAccessed = sitesAccessed;
     }
 
     public boolean isReadOnly() {
@@ -48,5 +49,13 @@ public class Transaction {
 
     public void setReadOnly(boolean readOnly) {
         isReadOnly = readOnly;
+    }
+
+    public int getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(int startTime) {
+        this.startTime = startTime;
     }
 }
