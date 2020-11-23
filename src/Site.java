@@ -9,4 +9,11 @@ public class Site {
         this.siteStatus = siteStatus;
         this.dataManager = new DataManager(index);
     }
+
+    Site(int index){
+        this.index = index;
+        this.siteStatus = SiteStatus.UP;
+        this.dataManager = new DataManager(index);
+    }
+
 }
