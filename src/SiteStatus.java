@@ -1,3 +1,3 @@
 public enum SiteStatus {
-    UP, DOWN;
+    UP, DOWN, RECOVERING;
 }
