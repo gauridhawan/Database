@@ -3,7 +3,7 @@ import java.util.HashMap;
 public class DataManager {
     LockTable lockTable;
     int index;
-    HashMap<String, Variable> map = new HashMap<>();
+    HashMap<String, Variable> variableMap = new HashMap<>();
 
     DataManager(int index){
         this.index = index;
@@ -11,22 +11,22 @@ public class DataManager {
         for(int i = 1; i<=20; i++){
             if(i%2 == 0 || (1 + i%10) == index){
                 String name = "x" + i;
-                map.put(name, new Variable(name, 10 * i, index));
+                variableMap.put(name, new Variable(name, 10 * i, index));
             }
         }
     }
 
     public void addVariable(String name, Variable variable){
-        map.put(name, variable);
+        variableMap.put(name, variable);
     }
 
     public Variable getVariable(String name){
-        if(map.containsKey(name)) return map.get(name);
+        if(variableMap.containsKey(name)) return variableMap.get(name);
         else return null;
     }
 
     public boolean hasVariable(String name){
-        if(map.containsKey(name)) return true;
+        if(variableMap.containsKey(name)) return true;
         return false;
     }
 
@@ -64,9 +64,9 @@ public class DataManager {
 
     public boolean writeValueToVariable(Transaction transaction, Variable variable, int value){
         if(this.lockTable.isVariableLockedByTransaction(variable, transaction, LockType.WRITE)){
-            Variable temp = this.map.get(variable.name);
+            Variable temp = this.variableMap.get(variable.name);
             temp.value = value;
-            this.map.replace(variable.name, temp);
+            this.variableMap.replace(variable.name, temp);
             return true;
         }
         return false;

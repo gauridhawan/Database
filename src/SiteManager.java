@@ -35,7 +35,7 @@ public class SiteManager {
         return ans;
     }
 
-    public booelan getLocks(Transaction transaction, Variable variable, LockType lockType){
+    public boolean getLocks(Transaction transaction, Integer variable, LockType lockType){
         int value = variable.getSites();
         List<Site> sites = this.getSites(value);
 
