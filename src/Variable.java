@@ -18,7 +18,7 @@ public class Variable{
         this.currentSite = currentSite;
     }
 
-    int getSites(){
+    static int getSites(int index){
         if(index % 2 == 0){
             return -1;
         }

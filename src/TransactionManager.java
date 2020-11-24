@@ -92,7 +92,7 @@ public class TransactionManager {
         int variableIndex = Integer.parseInt(variable.substring(1));
         Transaction transaction = transactionMap.get(transactionId);
 
-        if (siteManager.getLocks(transaction,variableIndex,LockType.WRITE)){
+        if (siteManager.getLock(transaction,variableIndex,LockType.WRITE) == LockStatus.GOT_LOCK.getLockStatus()){
             Map<String, Integer> uncommittedVars =  transaction.getUncommittedVariables();
             uncommittedVars.put(variable,value);
         }
