@@ -1,0 +1,20 @@
+# Test 4
+// T2 will abort because it write x6 to failed site 3
+// So the value of x6 will NOT change in the end
+// T1 will write x4 to all site
+
+begin(T1)
+begin(T2)
+R(T1,x3)
+W(T2,x6,600)
+fail(3)
+R(T2,x3)
+recover(3)
+W(T1,x4,400)
+end(T2)
+end(T1)
+dump()
+
+// Final status of dump
+// x4: 400 at all sites, as site 3 recover before write.
+// Other variables will not be changed (initial value).
