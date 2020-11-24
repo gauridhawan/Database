@@ -35,11 +35,58 @@ public class SiteManager {
         return ans;
     }
 
-    public booelan getLocks(Transaction transaction, Variable variable, LockType lockType){
-        int value = variable.getSites();
+    public int getLock(Transaction transaction, int variable, LockType lockType){
+        int value = Variable.getSites(variable);
         List<Site> sites = this.getSites(value);
+        boolean flag = true;
+        int recoveringFlag = 1;
+        int allSitesDown = 1;
+        int evenIndex = variable%2;
+        for(Site site : sites){
+            SiteStatus status = site.siteStatus;
+            Variable temp = site.dataManager.getVariable("x"+variable);
+            if(status == SiteStatus.DOWN){
+                continue;
+            }
+            if(status == SiteStatus.RECOVERING && lockType == LockType.READ){
+                if(!this.sites.get(site.index).recoveredVariables.contains(temp)){
+                    continue;
+                }
+                else if(evenIndex == 1){
+                    recoveringFlag = 1;
+                }
+            }
+            allSitesDown = 0;
+            boolean state = this.sites.get(site.index).getLock(transaction, temp, lockType);
+            if(state && lockType == LockType.READ){
+                if(recoveringFlag == 1){
+                    return LockStatus.GOT_LOCK_RECOVERING.getLockStatus();
+                }
+                else{
+                    return LockStatus.GOT_LOCK.getLockStatus();
+                }
+            }
+            flag &= state;
+        }
+        if(allSitesDown == 1){
+            return LockStatus.ALL_SITES_DOWN.getLockStatus();
+        }
+        else if (!flag){
+            return LockStatus.NO_LOCK.getLockStatus();
+        }
+        return LockStatus.GOT_LOCK.getLockStatus();
+    }
 
-        return false;
+    void fail(int id){
+        if(this.ifSiteExists(id)){
+            sites.get(id).failSite();
+        }
+    }
+
+    void recover(int id){
+        if(this.ifSiteExists(id)){
+            sites.get(id).recover();
+        }
     }
 
 
