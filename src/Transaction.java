@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -5,11 +7,11 @@ public class Transaction {
 
     String name;
     TransactionStatus transactionStatus;
-    List<Site> sitesAccessed;
-    Map<String, Integer> uncommittedVariables;
+    List<Site> sitesAccessed = new ArrayList<>();
+    Map<String, Integer> uncommittedVariables = new HashMap<>();
     int startTime;
     boolean isReadOnly;
-    Map<String, Integer> committedValues;
+    Map<String, Integer> committedValues = new HashMap<>();
 
 
     public Map<String, Integer> getUncommittedVariables() {

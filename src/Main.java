@@ -7,24 +7,19 @@ public class Main {
     public static void main(String args[]) throws FileNotFoundException {
         SiteManager siteManager = new SiteManager(10, 20);
         TransactionManager transactionManager = new TransactionManager();
-        DBReader dbReader = new DBReader("input.txt", false);
+        DBReader dbReader = new DBReader("../testcases/test2.txt", false);
         int time = 0;
-        File file = new File("input.txt");
+        File file = new File("/Users/kunalkhatri/Desktop/Semester3/ADB/Porject/Database/testcases/test2");
         Scanner fileReader = new Scanner(file);
         while(fileReader.hasNextLine()){
-            if(fileReader.nextLine().startsWith("//")){
+            String line = fileReader.nextLine();
+            if(line.startsWith("//")){
                 continue;
             }
             time++;
-            Instruction instruction = dbReader.getNextInstruction(fileReader.nextLine());
+            Instruction instruction = dbReader.getNextInstruction(line);
             instruction.timestamp = time;
-            if(instruction.transactionType == TransactionType.fail || instruction.transactionType == TransactionType.recover ||
-            instruction.transactionType == TransactionType.dump){
-                siteManager.tick(instruction);
-            }
-            else{
-                transactionManager.tick(instruction);
-            }
+            transactionManager.tick(instruction);
         }
     }
 }

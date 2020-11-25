@@ -5,18 +5,27 @@ public class Site {
     int lastFailedTime;
     SiteStatus siteStatus;
     DataManager dataManager;
-    HashSet<Variable> recoveredVariables = new HashSet<>();
+    HashSet<String> recoveredVariables = new HashSet<>();
 
     Site(int index, SiteStatus siteStatus){
         this.index = index;
         this.siteStatus = siteStatus;
         this.dataManager = new DataManager(index);
+        HashMap<String,Variable> temp = this.dataManager.variableMap;
+        for(String str : temp.keySet()){
+            recoveredVariables.add(str);
+        }
     }
 
     Site(int index){
         this.index = index;
         this.siteStatus = SiteStatus.UP;
         this.dataManager = new DataManager(index);
+        HashMap<String,Variable> temp = this.dataManager.variableMap;
+        for(String str : temp.keySet()){
+            recoveredVariables.add(str);
+        }
+        System.out.println(recoveredVariables);
     }
     public int getIndex() {
         return index;
@@ -44,7 +53,7 @@ public class Site {
 
     public boolean getLock(Transaction transaction, Variable variable, LockType lockType){
         if(this.dataManager.getLockOnVariable(transaction, variable, lockType)){
-            this.recoveredVariables.add(variable);
+            this.recoveredVariables.add(variable.name);
 
             if(recoveredVariables.size() == this.dataManager.variableMap.size()){
                 this.siteStatus = SiteStatus.UP;
@@ -59,8 +68,12 @@ public class Site {
     }
 
     public boolean writeVariable(Transaction transaction, Variable variable, int value){
-        if(this.siteStatus != SiteStatus.DOWN && recoveredVariables.contains(variable)){
+        //System.out.println(siteStatus +" "+ variable.name);
+        if(this.siteStatus != SiteStatus.DOWN && recoveredVariables.contains(variable.name)){
+            //System.out.println("inside");
             this.dataManager.writeValueToVariable(transaction, variable, value);
+            this.recoveredVariables.add(variable.name);
+            System.out.println(this.dataManager.getVariable(variable.name).value);
             return true;
         }
         return false;
@@ -83,7 +96,7 @@ public class Site {
         for(String string : this.dataManager.variableMap.keySet()){
             int index = Integer.parseInt(string.substring(1));
             if(index % 2 == 1){
-                this.recoveredVariables.add(this.dataManager.variableMap.get(string));
+                this.recoveredVariables.add(string);
             }
         }
         this.siteStatus = SiteStatus.RECOVERING;
@@ -99,16 +112,11 @@ public class Site {
 
     //TODO : Complete this!
     public void dumpSite(){
-        if(this.siteStatus == SiteStatus.DOWN){
-
+        System.out.print("site " + this.index + "- ");
+        for(String varName : this.dataManager.variableMap.keySet()){
+            System.out.print(varName+":"+this.dataManager.variableMap.get(varName).value+" ");
         }
-        else{
-            System.out.print("site " + this.index + "- ");
-            for(String varName : this.dataManager.variableMap.keySet()){
-                System.out.print(varName+":"+this.dataManager.variableMap.get(varName).value);
-            }
-            System.out.print("\n");
-        }
+        System.out.print("\n");
     }
 
     public DataManager getDataManager() {
