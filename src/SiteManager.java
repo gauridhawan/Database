@@ -74,8 +74,9 @@ public class SiteManager {
     public int getLock(Transaction transaction, int variable, LockType lockType){
         int value = Variable.getSites(variable);
         List<Site> sites = this.getSites(value);
+
         boolean flag = true;
-        int recoveringFlag = 1;
+        int recoveringFlag = 0;
         int allSitesDown = 1;
         int evenIndex = variable%2;
         for(Site site : sites){

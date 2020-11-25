@@ -9,7 +9,7 @@ public class Main {
         TransactionManager transactionManager = new TransactionManager();
         DBReader dbReader = new DBReader("../testcases/test2.txt", false);
         int time = 0;
-        File file = new File("/Users/kunalkhatri/Desktop/Semester3/ADB/Porject/Database/testcases/test2");
+        File file = new File("/Users/kunalkhatri/Desktop/Semester3/ADB/Porject/Database/testcases/test4");
         Scanner fileReader = new Scanner(file);
         while(fileReader.hasNextLine()){
             String line = fileReader.nextLine();

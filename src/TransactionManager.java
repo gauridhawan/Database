@@ -109,8 +109,10 @@ public class TransactionManager {
 
         }else{
             int lockAcquired = siteManager.getLock(transaction, variableIndex, LockType.READ);
+            System.out.println("######### " + lockAcquired);
             if(lockAcquired == LockStatus.GOT_LOCK.getLockStatus()){
                 int variableValue = siteManager.getVariableValues().get("x"+variableIndex);
+                System.out.println(variableValue);
             }
         }
 
@@ -118,7 +120,7 @@ public class TransactionManager {
     }
 
     public void endTransaction(String transactionId){
-        System.out.println(transactionId);
+        //System.out.println(transactionId);
         boolean isCommitted = commitTransaction(transactionId);
         if(isCommitted){
             System.out.println(transactionId+" commits");
@@ -152,7 +154,7 @@ public class TransactionManager {
     * */
     public void tick(Instruction currentInstr){
         checkDeadlock();
-        System.out.println(currentInstr.transactionType);
+        //System.out.println(currentInstr.transactionType);
         if(currentInstr.transactionType == TransactionType.begin){
             this.beginTransaction(currentInstr.transactionId, currentInstr.timestamp);
         }else if(currentInstr.transactionType == TransactionType.beginRO){
