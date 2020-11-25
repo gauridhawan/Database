@@ -25,7 +25,7 @@ public class Site {
         for(String str : temp.keySet()){
             recoveredVariables.add(str);
         }
-        System.out.println(recoveredVariables);
+        //System.out.println(recoveredVariables);
     }
     public int getIndex() {
         return index;
@@ -88,6 +88,7 @@ public class Site {
             Queue<Lock> queue = locks.get(variable);
             for(Lock lock: queue){
                 lock.transaction.setTransactionStatus(TransactionStatus.ABORTED);
+                System.out.println("aborting " + lock.transaction.name);
             }
         }
     }
