@@ -1,5 +1,3 @@
-import com.sun.xml.internal.bind.v2.TODO;
-
 import java.util.*;
 
 public class Site {
@@ -48,7 +46,7 @@ public class Site {
         if(this.dataManager.getLockOnVariable(transaction, variable, lockType)){
             this.recoveredVariables.add(variable);
 
-            if(recoveredVariables.size() == this.dataManager.map.size()){
+            if(recoveredVariables.size() == this.dataManager.variableMap.size()){
                 this.siteStatus = SiteStatus.UP;
             }
             return true;
@@ -82,10 +80,10 @@ public class Site {
     }
 
     public void recover(){
-        for(String string : this.dataManager.map.keySet()){
+        for(String string : this.dataManager.variableMap.keySet()){
             int index = Integer.parseInt(string.substring(1));
             if(index % 2 == 1){
-                this.recoveredVariables.add(this.dataManager.map.get(string));
+                this.recoveredVariables.add(this.dataManager.variableMap.get(string));
             }
         }
         this.siteStatus = SiteStatus.RECOVERING;
@@ -93,8 +91,8 @@ public class Site {
 
     public List<Variable> getAllVariables(){
         List<Variable> lst = new ArrayList<>();
-        for(String str : this.dataManager.map.keySet()){
-            lst.add(this.dataManager.map.get(str));
+        for(String str : this.dataManager.variableMap.keySet()){
+            lst.add(this.dataManager.variableMap.get(str));
         }
         return lst;
     }

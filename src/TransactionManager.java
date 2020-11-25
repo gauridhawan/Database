@@ -1,4 +1,8 @@
+import javafx.util.Pair;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -7,6 +11,7 @@ public class TransactionManager {
     int numberOfSites = 10;
     int numberOfVariables;
     Map<String,Transaction> transactionMap = new HashMap<>();
+    Map<String, List<Pair<String,Integer>>> transactionWritePermission = new HashMap<>();
     int currentTimeStamp;
     SiteManager siteManager;
     /*
@@ -14,10 +19,14 @@ public class TransactionManager {
     * Check if the transaction goes through using the condition - if any of the servers that we've accessed has gone down,
     * then it should abort (Not for readonly)
     * Otherwise the transaction can go ahead
+    * If transaction has been aborted, return false
     * */
     public boolean commitTransaction(String transactionId){
 
         Transaction transaction = transactionMap.get(transactionId);
+        if(transaction.getTransactionStatus() == TransactionStatus.ABORTED){
+            return false;
+        }
         if(!transaction.isReadOnly()){
             for(Site siteAccessed : transaction.getSitesAccessed()){
                 if(siteAccessed.getLastFailedTime() > transaction.getStartTime()){
@@ -34,9 +43,10 @@ public class TransactionManager {
             int variableIndex = Integer.parseInt(variable.substring(1));
             for(int i=0;i<numberOfSites;i++){
                 if(variableIndex%2 == 0 || (variableIndex%10 + 1 == i)){
-                    Site siteToBeUpdated = siteManager.getSiteMap().get(i);
+                    Site siteToBeUpdated = siteManager.getSite(i);
+                    Variable var = siteToBeUpdated.getDataManager().getVariable(variable);
                     // TODO check if this is correct
-                    siteToBeUpdated.writeVariable(uncommittedVariables.get(variable));
+                    siteToBeUpdated.writeVariable(transaction,var,uncommittedVariables.get(variable));
                 }
             }
 
@@ -68,11 +78,29 @@ public class TransactionManager {
 
     public void endTransaction(String transactionId){
 
+        boolean isCommitted = commitTransaction(transactionId);
+        if(isCommitted){
+            System.out.println(transactionId+" commits");
+        }else{
+            System.out.println(transactionId+" aborts");
+        }
+
     }
 
     public void writeRequest(String transactionId, String variable, int value){
-        
+
+        int variableIndex = Integer.parseInt(variable.substring(1));
+        Transaction transaction = transactionMap.get(transactionId);
+
+        if (siteManager.getLock(transaction,variableIndex,LockType.WRITE) == LockStatus.GOT_LOCK.getLockStatus()){
+            Map<String, Integer> uncommittedVars =  transaction.getUncommittedVariables();
+            uncommittedVars.put(variable,value);
+        }
+
+
     }
+
+
 
 
 
