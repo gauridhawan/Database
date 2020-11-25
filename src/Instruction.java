@@ -5,6 +5,7 @@ public class Instruction {
     String transactionId;
     int value;
     int site;
+    int timestamp;
 
     Instruction(TransactionType transactionType){
         this.transactionType = transactionType;
@@ -66,5 +67,13 @@ public class Instruction {
 
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
+    }
+
+    public int getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(int timestamp) {
+        this.timestamp = timestamp;
     }
 }
