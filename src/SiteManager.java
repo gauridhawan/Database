@@ -31,6 +31,27 @@ public class SiteManager {
         }
     }
 
+    public HashMap<String, Integer> getVariableValues(){
+        HashMap<String, Integer> ans = new HashMap<>();
+        for(Site site : this.sites){
+            if(site.siteStatus == SiteStatus.UP){
+                List<Variable> variables = site.getAllVariables();
+                for(Variable variable : variables){
+                    ans.put(variable.name, variable.value);
+                }
+            }
+
+            if(site.siteStatus == SiteStatus.RECOVERING){
+                List<Variable> variables = site.getAllVariables();
+                for(Variable variable : variables){
+                    if(site.recoveredVariables.contains(variable))
+                    ans.put(variable.name, variable.value);
+                }
+            }
+        }
+        return ans;
+    }
+
     public Site getSite(int index){
         if(ifSiteExists(index)){
             return sites.get(index);
