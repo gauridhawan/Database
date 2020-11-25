@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +72,8 @@ public class TransactionManager {
     public void beginROTransaction(String transactionId, int timestamp){
         Transaction transaction = createTransaction(transactionId, timestamp);
         transaction.setReadOnly(true);
+        HashMap<String, Integer> hm = this.siteManager.getVariableValues();
+        transaction.setCommittedValues(hm);
         transactionMap.put(transactionId,transaction);
     }
 

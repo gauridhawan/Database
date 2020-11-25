@@ -9,6 +9,7 @@ public class Transaction {
     Map<String, Integer> uncommittedVariables;
     int startTime;
     boolean isReadOnly;
+    Map<String, Integer> committedValues;
 
 
     public Map<String, Integer> getUncommittedVariables() {
@@ -17,6 +18,14 @@ public class Transaction {
 
     public void setUncommittedVariables(Map<String, Integer> uncommittedVariables) {
         this.uncommittedVariables = uncommittedVariables;
+    }
+
+    public Map<String, Integer> getCommittedValues() {
+        return committedValues;
+    }
+
+    public void setCommittedValues(Map<String, Integer> uncommittedVariables) {
+        this.committedValues = committedValues;
     }
 
     public String getName() {
