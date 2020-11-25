@@ -17,6 +17,20 @@ public class SiteManager {
         return true;
     }
 
+    public void tick(Instruction instruction){
+        if(instruction.transactionType == TransactionType.fail){
+            this.fail(instruction.site);
+        }
+        if(instruction.transactionType == TransactionType.recover){
+            this.recover(instruction.site);
+        }
+        if(instruction.transactionType == TransactionType.dump){
+            for(int i = 1; i <= numSites; i++){
+                this.sites.get(i).dumpSite();
+            }
+        }
+    }
+
     public Site getSite(int index){
         if(ifSiteExists(index)){
             return sites.get(index);

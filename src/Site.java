@@ -99,7 +99,16 @@ public class Site {
 
     //TODO : Complete this!
     public void dumpSite(){
+        if(this.siteStatus == SiteStatus.DOWN){
 
+        }
+        else{
+            System.out.print("site " + this.index + "- ");
+            for(String varName : this.dataManager.variableMap.keySet()){
+                System.out.print(varName+":"+this.dataManager.variableMap.get(varName).value);
+            }
+            System.out.print("\n");
+        }
     }
 
     public DataManager getDataManager() {
