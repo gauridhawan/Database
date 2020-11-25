@@ -1,6 +1,10 @@
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class TransactionManager {
@@ -73,6 +77,8 @@ public class TransactionManager {
     public void beginROTransaction(String transactionId, int timestamp){
         Transaction transaction = createTransaction(transactionId, timestamp);
         transaction.setReadOnly(true);
+        HashMap<String, Integer> variableValueMap = this.siteManager.getVariableValues();
+        transaction.setCommittedValues(variableValueMap);
         transactionMap.put(transactionId,transaction);
     }
 
@@ -90,6 +96,13 @@ public class TransactionManager {
         int variableIndex = Integer.parseInt(variable.substring(1));
 
         if(transaction.isReadOnly()){
+
+            Map<String, Integer> variableValueAtTransactionStart = transaction.getCommittedValues();
+            if(variableValueAtTransactionStart.containsKey(variable)){
+                printVariableValue(variable, variableValueAtTransactionStart.get(variable));
+            }else{
+                transaction.setTransactionStatus(TransactionStatus.WAITING);
+            }
 
         }else{
 
@@ -154,6 +167,10 @@ public class TransactionManager {
     public void checkDeadlock(){
 
         
+    }
+
+    public void printVariableValue(String variable, int value){
+        System.out.println(variable+": "+value);
     }
 
 }
