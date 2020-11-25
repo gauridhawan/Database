@@ -42,9 +42,6 @@ public class DBReader {
         }else if(transactionType.equalsIgnoreCase(TransactionType.dump.getTransactionType())){
             instr.transactionType = TransactionType.dump;
         }
-
-
-
         return instr;
     }
 
