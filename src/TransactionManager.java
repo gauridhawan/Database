@@ -100,9 +100,21 @@ public class TransactionManager {
 
     }
 
+    /*
+    * Check deadlock
+    * Instruction as argument
+    * check deadlock before each tick
+    * if deadlock, abort youngest transaction
+    * */
+    public void tick(Instruction currentInstr){
+        checkDeadlock();
+        if(currentInstr.transactionType == TransactionType.begin){
+            this.beginTransaction(currentInstr.transactionId, );
+        }
 
 
+    }
 
-
+    public void checkDeadlock(){}
 
 }
