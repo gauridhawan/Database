@@ -1,4 +1,6 @@
 import javafx.util.Pair;
+
+import java.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,12 +71,48 @@ public class TransactionManager {
         return transaction;
     }
 
+    /*
+    * TODO : Store current variable values
+    * */
     public void beginROTransaction(String transactionId, int timestamp){
         Transaction transaction = createTransaction(transactionId, timestamp);
         transaction.setReadOnly(true);
-        HashMap<String, Integer> hm = this.siteManager.getVariableValues();
-        transaction.setCommittedValues(hm);
+        HashMap<String, Integer> variableValueMap = this.siteManager.getVariableValues();
+        transaction.setCommittedValues(variableValueMap);
         transactionMap.put(transactionId,transaction);
+    }
+
+    /*
+    * RO will just have to check if the site is up or not, if yes, then put in blocked, otherwise simply read committed value
+    * normal read, try to get read lock, check if it doesn't have a write lock from any other transaction
+    * read can read from any site
+    * whichever site is up and is first, take read lock on that
+    *
+    * TODO : update read only part
+    * */
+    public void readRequest(String transactionId, int timestamp, String variable){
+
+        Transaction transaction = transactionMap.get(transactionId);
+        int variableIndex = Integer.parseInt(variable.substring(1));
+
+        if(transaction.isReadOnly()){
+
+            Map<String, Integer> variableValueAtTransactionStart = transaction.getCommittedValues();
+            if(variableValueAtTransactionStart.containsKey(variable)){
+                printVariableValue(variable, variableValueAtTransactionStart.get(variable));
+            }else{
+                transaction.setTransactionStatus(TransactionStatus.WAITING);
+            }
+
+        }else{
+
+            int lockAquired = siteManager.getLock(transaction, variableIndex, LockType.READ);
+            if(lockAquired == LockStatus.GOT_LOCK.getLockStatus()){
+
+            }
+        }
+
+
     }
 
     public void endTransaction(String transactionId){
@@ -96,6 +134,8 @@ public class TransactionManager {
         if (siteManager.getLock(transaction,variableIndex,LockType.WRITE) == LockStatus.GOT_LOCK.getLockStatus()){
             Map<String, Integer> uncommittedVars =  transaction.getUncommittedVariables();
             uncommittedVars.put(variable,value);
+        }else{
+            transaction.setTransactionStatus(TransactionStatus.WAITING);
         }
 
 
@@ -110,12 +150,27 @@ public class TransactionManager {
     public void tick(Instruction currentInstr){
         checkDeadlock();
         if(currentInstr.transactionType == TransactionType.begin){
-            this.beginTransaction(currentInstr.transactionId, );
+            this.beginTransaction(currentInstr.transactionId, currentInstr.timestamp);
+        }else if(currentInstr.transactionType == TransactionType.beginRO){
+            this.beginROTransaction(currentInstr.transactionId, currentInstr.timestamp);
+        }else if(currentInstr.transactionType == TransactionType.R){
+            this.readRequest(currentInstr.transactionId, currentInstr.timestamp, currentInstr.variableName);
+        }else if(currentInstr.transactionType == TransactionType.W){
+            this.writeRequest(currentInstr.transactionId, currentInstr.variableName, currentInstr.value);
+        }else if(currentInstr.transactionType == TransactionType.end){
+            this.endTransaction(currentInstr.transactionId);
         }
-
 
     }
 
-    public void checkDeadlock(){}
+
+    public void checkDeadlock(){
+
+        
+    }
+
+    public void printVariableValue(String variable, int value){
+        System.out.println(variable+": "+value);
+    }
 
 }

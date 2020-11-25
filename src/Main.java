@@ -12,6 +12,9 @@ public class Main {
         File file = new File("input.txt");
         Scanner fileReader = new Scanner(file);
         while(fileReader.hasNextLine()){
+            if(fileReader.nextLine().startsWith("//")){
+                continue;
+            }
             time++;
             Instruction instruction = dbReader.getNextInstruction(fileReader.nextLine());
             instruction.timestamp = time;
