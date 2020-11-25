@@ -1,7 +1,7 @@
-import javafx.util.Pair;
 
-import java.util.*;
-import java.util.ArrayList;
+import com.sun.tools.javac.util.Pair;
+
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

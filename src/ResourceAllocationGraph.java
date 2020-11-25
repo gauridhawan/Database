@@ -26,9 +26,7 @@ public class ResourceAllocationGraph {
     public void detectDeadlock(){
 
         for(String transaction : transactionSet){
-            dfs()
+            dfs();
         }
     }
-
-    public 
 }
