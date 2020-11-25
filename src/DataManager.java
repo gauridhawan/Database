@@ -62,14 +62,15 @@ public class DataManager {
         }
     }
 
-    public boolean writeValueToVariable(Transaction transaction, Variable variable, int value){
-        if(this.lockTable.isVariableLockedByTransaction(variable, transaction, LockType.WRITE)){
+    public void writeValueToVariable(Transaction transaction, Variable variable, int value){
+        //if(this.lockTable.isVariableLockedByTransaction(variable, transaction, LockType.WRITE)){
+            System.out.println("DataManager, writeValueToVariable -> " + value);
             Variable temp = this.variableMap.get(variable.name);
             temp.value = value;
             this.variableMap.replace(variable.name, temp);
-            return true;
-        }
-        return false;
+            //return true;
+        //}
+        //return false;
     }
 
 }

@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class LockTable {
-    HashMap<Variable, Queue<Lock>> locks;
+    HashMap<Variable, Queue<Lock>> locks = new HashMap<>();
 
     public int numberOfLocks(Variable variable){
         if(locks.containsKey(variable)){

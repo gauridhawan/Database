@@ -12,6 +12,7 @@ public class DBReader {
         String[] str = line.split("[\\(\\)]");
         Instruction instr = new Instruction();
         String transactionType = str[0];
+        //System.out.println("DBReader class, getNextInstruction method -> " + transactionType);
         if(transactionType.equalsIgnoreCase(TransactionType.begin.getTransactionType()) ||
                 transactionType.equalsIgnoreCase(TransactionType.beginRO.getTransactionType())){
             instr.transactionType = TransactionType.begin;
@@ -41,6 +42,10 @@ public class DBReader {
             instr.site = Integer.parseInt(values[0]);
         }else if(transactionType.equalsIgnoreCase(TransactionType.dump.getTransactionType())){
             instr.transactionType = TransactionType.dump;
+        }
+        else if(transactionType.equalsIgnoreCase(TransactionType.end.getTransactionType())){
+            instr.transactionType = TransactionType.end;
+            instr.transactionId = str[1];
         }
         return instr;
     }

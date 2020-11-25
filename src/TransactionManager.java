@@ -10,11 +10,11 @@ import java.util.Map;
 public class TransactionManager {
 
     int numberOfSites = 10;
-    int numberOfVariables;
+    int numberOfVariables = 20;
     Map<String,Transaction> transactionMap = new HashMap<>();
     Map<String, List<Pair<String,Integer>>> transactionWritePermission = new HashMap<>();
     int currentTimeStamp;
-    SiteManager siteManager;
+    SiteManager siteManager = new SiteManager(numberOfSites, numberOfVariables);
     /*
     * If the transaction is valid, commit the uncommitted variables
     * Check if the transaction goes through using the condition - if any of the servers that we've accessed has gone down,
@@ -32,6 +32,7 @@ public class TransactionManager {
             for(Site siteAccessed : transaction.getSitesAccessed()){
                 if(siteAccessed.getLastFailedTime() > transaction.getStartTime()){
                     // transaction cannot go forward since it failed since the transaction started
+                    //System.out.println(transactionId +" "+siteAccessed.getLastFailedTime()+" "+transaction.getStartTime());
                     transaction.setTransactionStatus(TransactionStatus.ABORTED);
                     return false;
                 }
@@ -39,11 +40,13 @@ public class TransactionManager {
         }
 
         Map<String,Integer> uncommittedVariables = transaction.getUncommittedVariables();
+        System.out.println(uncommittedVariables);
         for(String variable : uncommittedVariables.keySet()){
             // Write the variable at their resp sites
             int variableIndex = Integer.parseInt(variable.substring(1));
-            for(int i=0;i<numberOfSites;i++){
+            for(int i=1;i<=numberOfSites;i++){
                 if(variableIndex%2 == 0 || (variableIndex%10 + 1 == i)){
+                    //System.out.println("updating variables on commit");
                     Site siteToBeUpdated = siteManager.getSite(i);
                     Variable var = siteToBeUpdated.getDataManager().getVariable(variable);
                     // TODO check if this is correct
@@ -105,10 +108,9 @@ public class TransactionManager {
             }
 
         }else{
-
-            int lockAquired = siteManager.getLock(transaction, variableIndex, LockType.READ);
-            if(lockAquired == LockStatus.GOT_LOCK.getLockStatus()){
-
+            int lockAcquired = siteManager.getLock(transaction, variableIndex, LockType.READ);
+            if(lockAcquired == LockStatus.GOT_LOCK.getLockStatus()){
+                int variableValue = siteManager.getVariableValues().get("x"+variableIndex);
             }
         }
 
@@ -116,7 +118,7 @@ public class TransactionManager {
     }
 
     public void endTransaction(String transactionId){
-
+        System.out.println(transactionId);
         boolean isCommitted = commitTransaction(transactionId);
         if(isCommitted){
             System.out.println(transactionId+" commits");
@@ -134,7 +136,8 @@ public class TransactionManager {
         if (siteManager.getLock(transaction,variableIndex,LockType.WRITE) == LockStatus.GOT_LOCK.getLockStatus()){
             Map<String, Integer> uncommittedVars =  transaction.getUncommittedVariables();
             uncommittedVars.put(variable,value);
-        }else{
+        }
+        else{
             transaction.setTransactionStatus(TransactionStatus.WAITING);
         }
 
@@ -149,6 +152,7 @@ public class TransactionManager {
     * */
     public void tick(Instruction currentInstr){
         checkDeadlock();
+        System.out.println(currentInstr.transactionType);
         if(currentInstr.transactionType == TransactionType.begin){
             this.beginTransaction(currentInstr.transactionId, currentInstr.timestamp);
         }else if(currentInstr.transactionType == TransactionType.beginRO){
@@ -159,6 +163,8 @@ public class TransactionManager {
             this.writeRequest(currentInstr.transactionId, currentInstr.variableName, currentInstr.value);
         }else if(currentInstr.transactionType == TransactionType.end){
             this.endTransaction(currentInstr.transactionId);
+        }else {
+            this.siteManager.tick(currentInstr);
         }
 
     }
