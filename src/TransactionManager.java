@@ -112,6 +112,7 @@ public class TransactionManager {
             int lockAcquired = siteManager.getLock(transaction, variableIndex, LockType.READ);
             System.out.println("######### " + lockAcquired);
             if(lockAcquired == LockStatus.GOT_LOCK.getLockStatus()){
+                resourceAllocationGraph.addGetLockEdge(variable,transactionId);
                 Pair<Site, Integer> variableSitePair = siteManager.getVariableValues().get("x"+variableIndex);
                 int variableValue = variableSitePair.value;
                 Site site = variableSitePair.key;
@@ -169,6 +170,7 @@ public class TransactionManager {
         Transaction transaction = transactionMap.get(transactionId);
 
         if (siteManager.getLock(transaction,variableIndex,LockType.WRITE) == LockStatus.GOT_LOCK.getLockStatus()){
+            resourceAllocationGraph.addGetLockEdge(variable,transactionId);
             Map<String, Pair<Integer,List<Site>>> uncommittedVars =  transaction.getUncommittedVariables();
 
             List<Site> sitesToBeUpdated = new ArrayList<>();
@@ -216,8 +218,10 @@ public class TransactionManager {
         }else if(currentInstr.transactionType == TransactionType.beginRO){
             this.beginROTransaction(currentInstr.transactionId, currentInstr.timestamp);
         }else if(currentInstr.transactionType == TransactionType.R){
+            resourceAllocationGraph.addRequestLockEdge(currentInstr.transactionId,currentInstr.variableName);
             this.readRequest(currentInstr.transactionId, currentInstr.timestamp, currentInstr.variableName);
         }else if(currentInstr.transactionType == TransactionType.W){
+            resourceAllocationGraph.addRequestLockEdge(currentInstr.transactionId,currentInstr.variableName);
             this.writeRequest(currentInstr.transactionId, currentInstr.variableName, currentInstr.value);
         }else if(currentInstr.transactionType == TransactionType.end){
             this.endTransaction(currentInstr.transactionId);
