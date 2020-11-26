@@ -1,10 +1,4 @@
-
-import com.sun.tools.javac.util.Pair;
-
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class TransactionManager {
@@ -13,6 +7,7 @@ public class TransactionManager {
     int numberOfVariables = 20;
     Map<String,Transaction> transactionMap = new HashMap<>();
     Map<String, List<Pair<String,Integer>>> transactionWritePermission = new HashMap<>();
+    Map<String, Queue<Lock>> waitingTransactionMap = new HashMap<>();
     int currentTimeStamp;
     SiteManager siteManager = new SiteManager(numberOfSites, numberOfVariables);
     /*
@@ -115,24 +110,48 @@ public class TransactionManager {
                 int variableValue = siteManager.getVariableValues().get("x"+variableIndex);
                 printVariableValue("x"+variableIndex, variableValue);
             }
+            else{
+                if(transaction.transactionStatus != TransactionStatus.WAITING) {
+                    if (waitingTransactionMap.containsKey(variable)) {
+                        waitingTransactionMap.get(variable).add(new Lock(transaction, LockType.READ));
+                    } else {
+                        Queue<Lock> queue = new LinkedList<>();
+                        queue.add(new Lock(transaction, LockType.READ));
+                        waitingTransactionMap.put(variable, queue);
+                    }
+                    transaction.setTransactionStatus(TransactionStatus.WAITING);
+                }
+            }
         }
-
 
     }
 
     public void endTransaction(String transactionId){
         //System.out.println(transactionId);
         boolean isCommitted = commitTransaction(transactionId);
+        this.clearLocks(transactionId);
         if(isCommitted){
             System.out.println(transactionId+" commits");
         }else{
             System.out.println(transactionId+" aborts");
         }
+    }
 
+    public void clearLocks(String transactionId){
+        Transaction transaction = this.transactionMap.get(transactionId);
+        for(Site site : transaction.sitesAccessed){
+            for(String variable : transaction.variablesAccessed){
+                Queue<Lock> locks = this.siteManager.getSite(site.index).dataManager.lockTable.locks.get(variable);
+                Queue<Lock> ans = new LinkedList<>();
+                for(Lock lock : locks){
+                    if(lock.transaction != transaction) ans.add(lock);
+                }
+                this.siteManager.getSite(site.index).dataManager.lockTable.locks.put(variable, ans);
+            }
+        }
     }
 
     public void writeRequest(String transactionId, String variable, int value){
-
         int variableIndex = Integer.parseInt(variable.substring(1));
         Transaction transaction = transactionMap.get(transactionId);
 
@@ -141,8 +160,19 @@ public class TransactionManager {
             uncommittedVars.put(variable,value);
         }
         else{
-            transaction.setTransactionStatus(TransactionStatus.WAITING);
+            if(transaction.transactionStatus != TransactionStatus.WAITING) {
+                transaction.setTransactionStatus(TransactionStatus.WAITING);
+                if (waitingTransactionMap.containsKey(variable)) {
+                    waitingTransactionMap.get(variable).add(new Lock(transaction, LockType.WRITE));
+                } else {
+                    Queue<Lock> queue = new LinkedList<>();
+                    queue.add(new Lock(transaction, LockType.WRITE));
+                    waitingTransactionMap.put(variable, queue);
+                }
+            }
         }
+
+
 
 
     }

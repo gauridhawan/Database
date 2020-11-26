@@ -83,8 +83,8 @@ public class Site {
         this.siteStatus = SiteStatus.DOWN;
         this.recoveredVariables = new HashSet<>();
         LockTable temp = this.dataManager.getLockTable();
-        HashMap<Variable, Queue<Lock>> locks= temp.locks;
-        for(Variable variable : locks.keySet()){
+        HashMap<String, Queue<Lock>> locks= temp.locks;
+        for(String variable : locks.keySet()){
             Queue<Lock> queue = locks.get(variable);
             for(Lock lock: queue){
                 lock.transaction.setTransactionStatus(TransactionStatus.ABORTED);
