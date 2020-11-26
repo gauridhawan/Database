@@ -126,5 +126,8 @@ public class SiteManager {
         }
     }
 
+    public void clearLocks(){
+
+    }
 
 }

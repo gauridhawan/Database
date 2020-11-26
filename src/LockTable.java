@@ -1,25 +1,25 @@
 import java.util.*;
 
 public class LockTable {
-    HashMap<Variable, Queue<Lock>> locks = new HashMap<>();
+    HashMap<String, Queue<Lock>> locks = new HashMap<>();
 
     public int numberOfLocks(Variable variable){
-        if(locks.containsKey(variable)){
-            return locks.get(variable).size();
+        if(locks.containsKey(variable.name)){
+            return locks.get(variable.name).size();
         }
         else return 0;
     }
 
     public boolean setLock(Transaction transaction, Variable variable, LockType lockType){
         Lock lock = new Lock(transaction, lockType);
-        if(locks.containsKey(variable)){
-            locks.get(variable).add(lock);
+        if(locks.containsKey(variable.name)){
+            locks.get(variable.name).add(lock);
             return false;
         }
         else{
             Queue<Lock> tempQueue = new LinkedList<>();
             tempQueue.add(lock);
-            locks.put(variable, tempQueue);
+            locks.put(variable.name, tempQueue);
             return true;
         }
     }
@@ -59,7 +59,7 @@ public class LockTable {
             Queue<Lock> tempQueue = locks.get(variable);
             tempQueue.remove(lock);
             if(tempQueue.size() == 0) locks.remove(variable);
-            else locks.replace(variable, tempQueue);
+            else locks.replace(variable.name, tempQueue);
             return true;
         }
         return false;
