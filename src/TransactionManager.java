@@ -29,9 +29,9 @@ public class TransactionManager {
             return false;
         }
         if(!transaction.isReadOnly()){
-            for(Site siteAccessed : transaction.getSitesAccessed()){
-                System.out.println(transactionId +" "+ siteAccessed.lastFailedTime +" "+transaction.startTime);
-                if(siteAccessed.getLastFailedTime() > transaction.getStartTime()){
+            for(Pair<Site, Integer> siteAccessed : transaction.getSitesAccessed()){
+                System.out.println(transactionId +" "+ siteAccessed.key.lastFailedTime +" "+siteAccessed.value);
+                if(siteAccessed.key.getLastFailedTime() > siteAccessed.value){
                     // transaction cannot go forward since it failed since the transaction started
                     //System.out.println(transactionId +" "+siteAccessed.getLastFailedTime()+" "+transaction.getStartTime());
                     transaction.setTransactionStatus(TransactionStatus.ABORTED);
@@ -40,21 +40,16 @@ public class TransactionManager {
             }
         }
 
-        Map<String,Integer> uncommittedVariables = transaction.getUncommittedVariables();
+        Map<String,Pair<Integer,List<Site>>> uncommittedVariables = transaction.getUncommittedVariables();
         System.out.println(uncommittedVariables);
         for(String variable : uncommittedVariables.keySet()){
             // Write the variable at their resp sites
-            int variableIndex = Integer.parseInt(variable.substring(1));
-            for(int i=1;i<=numberOfSites;i++){
-                if(variableIndex%2 == 0 || (variableIndex%10 + 1 == i)){
-                    //System.out.println("updating variables on commit");
-                    Site siteToBeUpdated = siteManager.getSite(i);
-                    Variable var = siteToBeUpdated.getDataManager().getVariable(variable);
-                    // TODO check if this is correct
-                    siteToBeUpdated.writeVariable(transaction,var,uncommittedVariables.get(variable));
-                }
+            List<Site> sitesToBeUpdated = uncommittedVariables.get(variable).value;
+            for(Site site : sitesToBeUpdated){
+                Site siteToBeUpdated = site;
+                Variable var = siteToBeUpdated.getDataManager().getVariable(variable);
+                siteToBeUpdated.writeVariable(transaction,var,uncommittedVariables.get(variable).key);
             }
-
         }
 
         transaction.setTransactionStatus(TransactionStatus.COMMITTED);
@@ -85,7 +80,7 @@ public class TransactionManager {
         //System.out.println(variableValueMap);
         HashMap<String, Integer> variableValueMap1 = new HashMap<>();
         for(String str : variableValueMap.keySet()){
-            variableValueMap1.put(str, variableValueMap.get(str).t);
+            variableValueMap1.put(str, variableValueMap.get(str).value);
         }
         transaction.setCommittedValues(variableValueMap1);
         transactionMap.put(transactionId,transaction);
@@ -117,10 +112,10 @@ public class TransactionManager {
             int lockAcquired = siteManager.getLock(transaction, variableIndex, LockType.READ);
             System.out.println("######### " + lockAcquired);
             if(lockAcquired == LockStatus.GOT_LOCK.getLockStatus()){
-                Pair<Site, Integer> pair = siteManager.getVariableValues().get("x"+variableIndex);
-                int variableValue = pair.t;
-                Site site = pair.u;
-                transaction.sitesAccessed.add(site);
+                Pair<Site, Integer> variableSitePair = siteManager.getVariableValues().get("x"+variableIndex);
+                int variableValue = variableSitePair.value;
+                Site site = variableSitePair.key;
+                transaction.sitesAccessed.add(new Pair<>(site, currentTimeStamp));
                 printVariableValue("x"+variableIndex, variableValue);
 
             }
@@ -157,14 +152,14 @@ public class TransactionManager {
 
     public void clearLocks(String transactionId){
         Transaction transaction = this.transactionMap.get(transactionId);
-        for(Site site : transaction.sitesAccessed){
+        for(Pair<Site, Integer> siteAccessed : transaction.sitesAccessed){
             for(String variable : transaction.variablesAccessed){
-                Queue<Lock> locks = this.siteManager.getSite(site.index).dataManager.lockTable.locks.get(variable);
+                Queue<Lock> locks = this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.get(variable);
                 Queue<Lock> ans = new LinkedList<>();
                 for(Lock lock : locks){
                     if(lock.transaction.name != transaction.name) ans.add(lock);
                 }
-                this.siteManager.getSite(site.index).dataManager.lockTable.locks.put(variable, ans);
+                this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.put(variable, ans);
             }
         }
     }
@@ -174,19 +169,23 @@ public class TransactionManager {
         Transaction transaction = transactionMap.get(transactionId);
 
         if (siteManager.getLock(transaction,variableIndex,LockType.WRITE) == LockStatus.GOT_LOCK.getLockStatus()){
-            Map<String, Integer> uncommittedVars =  transaction.getUncommittedVariables();
-            uncommittedVars.put(variable,value);
+            Map<String, Pair<Integer,List<Site>>> uncommittedVars =  transaction.getUncommittedVariables();
+
+            List<Site> sitesToBeUpdated = new ArrayList<>();
             if(variableIndex%2==0) {
                 for (Site site : siteManager.sites) {
                     if (site.siteStatus != SiteStatus.DOWN) {
-                        transaction.sitesAccessed.add(site);
+                        transaction.sitesAccessed.add(new Pair<>(site,currentTimeStamp));
+                        sitesToBeUpdated.add(site);
                     }
                 }
             }
             else{
                 Site site = siteManager.getSite(variableIndex%10 + 1);
-                transaction.sitesAccessed.add(site);
+                sitesToBeUpdated.add(site);
+                transaction.sitesAccessed.add(new Pair<>(site,currentTimeStamp));
             }
+            uncommittedVars.put(variable,new Pair<>(value,sitesToBeUpdated));
         }
         else{
             addToWaitingQueue(variable,transaction,LockType.WRITE);

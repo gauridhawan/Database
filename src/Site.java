@@ -69,7 +69,9 @@ public class Site {
 
     public boolean writeVariable(Transaction transaction, Variable variable, int value){
         //System.out.println(siteStatus +" "+ variable.name);
-        if(this.siteStatus != SiteStatus.DOWN && recoveredVariables.contains(variable.name)){
+        // removing check on recovered variables since it is only required in the case of read request
+        // recoveredVariables.contains(variable.name)
+        if(this.siteStatus != SiteStatus.DOWN){
             //System.out.println("inside");
             this.dataManager.writeValueToVariable(transaction, variable, value);
             this.recoveredVariables.add(variable.name);
@@ -115,8 +117,13 @@ public class Site {
     //TODO : Complete this!
     public void dumpSite(){
         System.out.print("site " + this.index + "- ");
+        TreeMap<Integer, String> variableValuesMap = new TreeMap<>();
         for(String varName : this.dataManager.variableMap.keySet()){
-            System.out.print(varName+":"+this.dataManager.variableMap.get(varName).value+" ");
+            Variable variable = this.dataManager.variableMap.get(varName);
+            variableValuesMap.put(variable.index, varName+":"+variable.value);
+        }
+        for(Integer index : variableValuesMap.keySet()){
+            System.out.print(variableValuesMap.get(index) +" ");
         }
         System.out.print("\n");
     }
