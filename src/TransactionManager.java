@@ -81,6 +81,7 @@ public class TransactionManager {
         Transaction transaction = createTransaction(transactionId, timestamp);
         transaction.setReadOnly(true);
         HashMap<String, Integer> variableValueMap = this.siteManager.getVariableValues();
+        //System.out.println(variableValueMap);
         transaction.setCommittedValues(variableValueMap);
         transactionMap.put(transactionId,transaction);
     }
@@ -99,8 +100,8 @@ public class TransactionManager {
         int variableIndex = Integer.parseInt(variable.substring(1));
 
         if(transaction.isReadOnly()){
-
             Map<String, Integer> variableValueAtTransactionStart = transaction.getCommittedValues();
+            System.out.println(variableValueAtTransactionStart);
             if(variableValueAtTransactionStart.containsKey(variable)){
                 printVariableValue(variable, variableValueAtTransactionStart.get(variable));
             }else{
@@ -112,7 +113,7 @@ public class TransactionManager {
             System.out.println("######### " + lockAcquired);
             if(lockAcquired == LockStatus.GOT_LOCK.getLockStatus()){
                 int variableValue = siteManager.getVariableValues().get("x"+variableIndex);
-                System.out.println(variableValue);
+                printVariableValue("x"+variableIndex, variableValue);
             }
         }
 
