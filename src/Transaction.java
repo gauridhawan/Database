@@ -7,21 +7,23 @@ public class Transaction {
 
     String name;
     TransactionStatus transactionStatus;
-    List<Site> sitesAccessed = new ArrayList<>();
+    List<Pair<Site,Integer>> sitesAccessed = new ArrayList<>();
     List<String> variablesAccessed = new ArrayList<>();
-    Map<String, Integer> uncommittedVariables = new HashMap<>();
+    Map<String, Pair<Integer, List<Site>>> uncommittedVariables = new HashMap<>();
     int startTime;
     boolean isReadOnly;
     Map<String, Integer> committedValues = new HashMap<>();
 
 
-    public Map<String, Integer> getUncommittedVariables() {
+    public Map<String, Pair<Integer, List<Site>>> getUncommittedVariables() {
         return uncommittedVariables;
     }
 
-    public void setUncommittedVariables(Map<String, Integer> uncommittedVariables) {
+    public void setUncommittedVariables(Map<String, Pair<Integer, List<Site>>> uncommittedVariables) {
         this.uncommittedVariables = uncommittedVariables;
     }
+
+
 
     public Map<String, Integer> getCommittedValues() {
         return committedValues;
@@ -47,11 +49,11 @@ public class Transaction {
         this.transactionStatus = transactionStatus;
     }
 
-    public List<Site> getSitesAccessed() {
+    public List<Pair<Site,Integer>> getSitesAccessed() {
         return sitesAccessed;
     }
 
-    public void setSitesAccessed(List<Site> sitesAccessed) {
+    public void setSitesAccessed(List<Pair<Site,Integer>> sitesAccessed) {
         this.sitesAccessed = sitesAccessed;
     }
 
