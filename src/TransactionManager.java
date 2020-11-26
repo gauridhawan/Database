@@ -1,8 +1,4 @@
 
-import com.sun.tools.javac.util.Pair;
-
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +30,7 @@ public class TransactionManager {
         }
         if(!transaction.isReadOnly()){
             for(Site siteAccessed : transaction.getSitesAccessed()){
+                System.out.println(transactionId +" "+ siteAccessed.lastFailedTime +" "+transaction.startTime);
                 if(siteAccessed.getLastFailedTime() > transaction.getStartTime()){
                     // transaction cannot go forward since it failed since the transaction started
                     //System.out.println(transactionId +" "+siteAccessed.getLastFailedTime()+" "+transaction.getStartTime());
@@ -84,9 +81,13 @@ public class TransactionManager {
     public void beginROTransaction(String transactionId, int timestamp){
         Transaction transaction = createTransaction(transactionId, timestamp);
         transaction.setReadOnly(true);
-        HashMap<String, Integer> variableValueMap = this.siteManager.getVariableValues();
+        HashMap<String, Pair<Site,Integer>> variableValueMap = this.siteManager.getVariableValues();
         //System.out.println(variableValueMap);
-        transaction.setCommittedValues(variableValueMap);
+        HashMap<String, Integer> variableValueMap1 = new HashMap<>();
+        for(String str : variableValueMap.keySet()){
+            variableValueMap1.put(str, variableValueMap.get(str).t);
+        }
+        transaction.setCommittedValues(variableValueMap1);
         transactionMap.put(transactionId,transaction);
     }
 
@@ -116,8 +117,12 @@ public class TransactionManager {
             int lockAcquired = siteManager.getLock(transaction, variableIndex, LockType.READ);
             System.out.println("######### " + lockAcquired);
             if(lockAcquired == LockStatus.GOT_LOCK.getLockStatus()){
-                int variableValue = siteManager.getVariableValues().get("x"+variableIndex);
+                Pair<Site, Integer> pair = siteManager.getVariableValues().get("x"+variableIndex);
+                int variableValue = pair.t;
+                Site site = pair.u;
+                transaction.sitesAccessed.add(site);
                 printVariableValue("x"+variableIndex, variableValue);
+
             }
             else{
                 addToWaitingQueue(variable, transaction, LockType.READ);
@@ -157,7 +162,7 @@ public class TransactionManager {
                 Queue<Lock> locks = this.siteManager.getSite(site.index).dataManager.lockTable.locks.get(variable);
                 Queue<Lock> ans = new LinkedList<>();
                 for(Lock lock : locks){
-                    if(lock.transaction != transaction) ans.add(lock);
+                    if(lock.transaction.name != transaction.name) ans.add(lock);
                 }
                 this.siteManager.getSite(site.index).dataManager.lockTable.locks.put(variable, ans);
             }
@@ -171,6 +176,17 @@ public class TransactionManager {
         if (siteManager.getLock(transaction,variableIndex,LockType.WRITE) == LockStatus.GOT_LOCK.getLockStatus()){
             Map<String, Integer> uncommittedVars =  transaction.getUncommittedVariables();
             uncommittedVars.put(variable,value);
+            if(variableIndex%2==0) {
+                for (Site site : siteManager.sites) {
+                    if (site.siteStatus != SiteStatus.DOWN) {
+                        transaction.sitesAccessed.add(site);
+                    }
+                }
+            }
+            else{
+                Site site = siteManager.getSite(variableIndex%10 + 1);
+                transaction.sitesAccessed.add(site);
+            }
         }
         else{
             addToWaitingQueue(variable,transaction,LockType.WRITE);
@@ -183,8 +199,18 @@ public class TransactionManager {
     * check deadlock before each tick
     * if deadlock, abort youngest transaction
     * */
+    public void clearAbortedTransactions(Map<String, Transaction> transactionMap){
+        for(String str : transactionMap.keySet()){
+            Transaction transaction = transactionMap.get(str);
+            if(transaction.transactionStatus == TransactionStatus.ABORTED) {
+                clearLocks(str);
+            }
+        }
+    }
+
     public void tick(Instruction currentInstr){
         resourceAllocationGraph.detectDeadlock(transactionMap);
+        clearAbortedTransactions(transactionMap);
         //System.out.println(currentInstr.transactionType);
         if(currentInstr.transactionType == TransactionType.begin){
             this.beginTransaction(currentInstr.transactionId, currentInstr.timestamp);
@@ -197,9 +223,9 @@ public class TransactionManager {
         }else if(currentInstr.transactionType == TransactionType.end){
             this.endTransaction(currentInstr.transactionId);
         }else {
-            this.siteManager.tick(currentInstr);
+            this.siteManager.tick(currentInstr, currentTimeStamp);
         }
-
+        currentTimeStamp++;
     }
 
 

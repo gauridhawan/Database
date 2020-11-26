@@ -79,9 +79,10 @@ public class Site {
         return false;
     }
 
-    public void failSite(){
+    public void failSite(int time){
         this.siteStatus = SiteStatus.DOWN;
         this.recoveredVariables = new HashSet<>();
+        this.lastFailedTime = time;
         LockTable temp = this.dataManager.getLockTable();
         HashMap<String, Queue<Lock>> locks= temp.locks;
         for(String variable : locks.keySet()){
