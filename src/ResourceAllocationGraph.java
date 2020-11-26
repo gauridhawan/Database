@@ -30,7 +30,7 @@ public class ResourceAllocationGraph {
         for(String transaction : transactionSet){
             dfs(transaction, visitedTransactions, new ArrayList(), transactionsInCycle);
         }
-
+        System.out.println("Cycles -> " + transactionsInCycle);
         removeCycle(transactionMap, transactionsInCycle);
     }
 

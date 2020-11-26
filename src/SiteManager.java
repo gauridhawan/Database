@@ -17,9 +17,9 @@ public class SiteManager {
         return true;
     }
 
-    public void tick(Instruction instruction){
+    public void tick(Instruction instruction, int time){
         if(instruction.transactionType == TransactionType.fail){
-            this.fail(instruction.site);
+            this.fail(instruction.site, time);
         }
         if(instruction.transactionType == TransactionType.recover){
             this.recover(instruction.site);
@@ -31,13 +31,13 @@ public class SiteManager {
         }
     }
 
-    public HashMap<String, Integer> getVariableValues(){
-        HashMap<String, Integer> ans = new HashMap<>();
+    public HashMap<String, Pair<Site,Integer>> getVariableValues(){
+        HashMap<String, Pair<Site,Integer>> ans = new HashMap<>();
         for(Site site : this.sites){
             if(site.siteStatus == SiteStatus.UP){
                 List<Variable> variables = site.getAllVariables();
                 for(Variable variable : variables){
-                    ans.put(variable.name, variable.value);
+                    ans.put(variable.name, new Pair(site,variable.value));
                 }
             }
 
@@ -45,7 +45,7 @@ public class SiteManager {
                 List<Variable> variables = site.getAllVariables();
                 for(Variable variable : variables){
                     if(site.recoveredVariables.contains(variable))
-                    ans.put(variable.name, variable.value);
+                    ans.put(variable.name, new Pair(site,variable.value));
                 }
             }
         }
@@ -114,9 +114,9 @@ public class SiteManager {
         return LockStatus.GOT_LOCK.getLockStatus();
     }
 
-    void fail(int id){
+    void fail(int id, int time){
         if(this.ifSiteExists(id)){
-            sites.get(id).failSite();
+            sites.get(id).failSite(time);
         }
     }
 
