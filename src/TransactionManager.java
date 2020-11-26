@@ -2,6 +2,7 @@
 import com.sun.tools.javac.util.Pair;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ public class TransactionManager {
     Map<String, List<Pair<String,Integer>>> transactionWritePermission = new HashMap<>();
     int currentTimeStamp;
     SiteManager siteManager = new SiteManager(numberOfSites, numberOfVariables);
+    ResourceAllocationGraph resourceAllocationGraph = new ResourceAllocationGraph();
     /*
     * If the transaction is valid, commit the uncommitted variables
     * Check if the transaction goes through using the condition - if any of the servers that we've accessed has gone down,
@@ -154,7 +156,7 @@ public class TransactionManager {
     * if deadlock, abort youngest transaction
     * */
     public void tick(Instruction currentInstr){
-        checkDeadlock();
+        resourceAllocationGraph.detectDeadlock(transactionMap);
         //System.out.println(currentInstr.transactionType);
         if(currentInstr.transactionType == TransactionType.begin){
             this.beginTransaction(currentInstr.transactionId, currentInstr.timestamp);
@@ -174,6 +176,9 @@ public class TransactionManager {
 
 
     public void checkDeadlock(){
+
+
+
 
         
     }
