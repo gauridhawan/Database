@@ -11,7 +11,7 @@ public class LockTable {
     }
 
     public boolean setLock(Transaction transaction, Variable variable, LockType lockType){
-        Lock lock = new Lock(transaction, lockType);
+        Lock lock = new Lock(transaction.name, lockType);
         if(locks.containsKey(variable.name)){
             locks.get(variable.name).add(lock);
             return false;
@@ -26,8 +26,8 @@ public class LockTable {
 
     public boolean isVariableLocked(Variable variable){
         if(locks.containsKey(variable)){
-            if(locks.get(variable).size() == 0) return true;
-            return false;
+            if(locks.get(variable).size() == 0) return false;
+            return true;
         }
         return false;
     }
@@ -68,7 +68,7 @@ public class LockTable {
     public boolean isVariableLockedByTransaction(Variable variable, Transaction transaction, LockType lockType){
         if(locks.containsKey(variable)){
             Queue<Lock> tempQueue = locks.get(variable);
-            if(tempQueue.contains(new Lock(transaction, lockType))) return true;
+            if(tempQueue.contains(new Lock(transaction.name, lockType))) return true;
             return false;
         }
         return false;
