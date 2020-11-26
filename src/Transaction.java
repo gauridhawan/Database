@@ -8,6 +8,7 @@ public class Transaction {
     String name;
     TransactionStatus transactionStatus;
     List<Site> sitesAccessed = new ArrayList<>();
+    List<String> variablesAccessed = new ArrayList<>();
     Map<String, Integer> uncommittedVariables = new HashMap<>();
     int startTime;
     boolean isReadOnly;
