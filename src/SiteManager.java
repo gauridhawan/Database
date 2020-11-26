@@ -44,7 +44,7 @@ public class SiteManager {
             if(site.siteStatus == SiteStatus.RECOVERING){
                 List<Variable> variables = site.getAllVariables();
                 for(Variable variable : variables){
-                    if(site.recoveredVariables.contains(variable))
+                    if(site.recoveredVariables.contains(variable.name))
                     ans.put(variable.name, new Pair(site,variable.value));
                 }
             }
@@ -79,6 +79,7 @@ public class SiteManager {
         int recoveringFlag = 0;
         int allSitesDown = 1;
         int evenIndex = variable%2;
+        //System.out.println(sites.get(0).recoveredVariables + " "+ sites.get(0).siteStatus);
         for(Site site : sites){
             SiteStatus status = site.siteStatus;
             Variable temp = site.dataManager.getVariable("x"+variable);
@@ -86,7 +87,7 @@ public class SiteManager {
                 continue;
             }
             if(status == SiteStatus.RECOVERING && lockType == LockType.READ){
-                if(!this.sites.get(site.index).recoveredVariables.contains(temp)){
+                if(!this.sites.get(site.index).recoveredVariables.contains(temp.name)){
                     continue;
                 }
                 else if(evenIndex == 1){

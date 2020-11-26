@@ -75,7 +75,7 @@ public class Site {
             //System.out.println("inside");
             this.dataManager.writeValueToVariable(transaction, variable, value);
             this.recoveredVariables.add(variable.name);
-            System.out.println(this.dataManager.getVariable(variable.name).value);
+            //System.out.println(this.dataManager.getVariable(variable.name).value);
             return true;
         }
         return false;
@@ -87,13 +87,13 @@ public class Site {
         this.lastFailedTime = time;
         LockTable temp = this.dataManager.getLockTable();
         HashMap<String, Queue<Lock>> locks= temp.locks;
-        for(String variable : locks.keySet()){
-            Queue<Lock> queue = locks.get(variable);
-            for(Lock lock: queue){
-                lock.transaction.setTransactionStatus(TransactionStatus.ABORTED);
-                System.out.println("aborting " + lock.transaction.name);
-            }
-        }
+        //for(String variable : locks.keySet()){
+        //    Queue<Lock> queue = locks.get(variable);
+        //    for(Lock lock: queue){
+                //lock.transaction.setTransactionStatus(TransactionStatus.ABORTED);
+        //        System.out.println("aborting " + lock.transaction.name);
+        //    }
+        //}
     }
 
     public void recover(){
@@ -104,6 +104,7 @@ public class Site {
             }
         }
         this.siteStatus = SiteStatus.RECOVERING;
+        System.out.println("Recovered Vairables : " + this.recoveredVariables);
     }
 
     public List<Variable> getAllVariables(){
