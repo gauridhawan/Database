@@ -26,7 +26,7 @@ public class Transaction {
         return committedValues;
     }
 
-    public void setCommittedValues(Map<String, Integer> uncommittedVariables) {
+    public void setCommittedValues(Map<String, Integer> committedValues) {
         this.committedValues = committedValues;
     }
 
