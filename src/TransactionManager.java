@@ -1,3 +1,11 @@
+
+import com.sun.tools.javac.util.Pair;
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.*;
 
 
@@ -10,6 +18,7 @@ public class TransactionManager {
     Map<String, Queue<Lock>> waitingTransactionMap = new HashMap<>();
     int currentTimeStamp;
     SiteManager siteManager = new SiteManager(numberOfSites, numberOfVariables);
+    ResourceAllocationGraph resourceAllocationGraph = new ResourceAllocationGraph();
     /*
     * If the transaction is valid, commit the uncommitted variables
     * Check if the transaction goes through using the condition - if any of the servers that we've accessed has gone down,
@@ -111,19 +120,23 @@ public class TransactionManager {
                 printVariableValue("x"+variableIndex, variableValue);
             }
             else{
-                if(transaction.transactionStatus != TransactionStatus.WAITING) {
-                    if (waitingTransactionMap.containsKey(variable)) {
-                        waitingTransactionMap.get(variable).add(new Lock(transaction, LockType.READ));
-                    } else {
-                        Queue<Lock> queue = new LinkedList<>();
-                        queue.add(new Lock(transaction, LockType.READ));
-                        waitingTransactionMap.put(variable, queue);
-                    }
-                    transaction.setTransactionStatus(TransactionStatus.WAITING);
-                }
+                addToWaitingQueue(variable, transaction, LockType.READ);
             }
         }
 
+    }
+
+    private void addToWaitingQueue(String variable, Transaction transaction, LockType lockType) {
+        if(transaction.transactionStatus != TransactionStatus.WAITING) {
+            if (waitingTransactionMap.containsKey(variable)) {
+                waitingTransactionMap.get(variable).add(new Lock(transaction, lockType));
+            } else {
+                Queue<Lock> queue = new LinkedList<>();
+                queue.add(new Lock(transaction, LockType.READ));
+                waitingTransactionMap.put(variable, queue);
+            }
+            transaction.setTransactionStatus(TransactionStatus.WAITING);
+        }
     }
 
     public void endTransaction(String transactionId){
@@ -160,21 +173,8 @@ public class TransactionManager {
             uncommittedVars.put(variable,value);
         }
         else{
-            if(transaction.transactionStatus != TransactionStatus.WAITING) {
-                transaction.setTransactionStatus(TransactionStatus.WAITING);
-                if (waitingTransactionMap.containsKey(variable)) {
-                    waitingTransactionMap.get(variable).add(new Lock(transaction, LockType.WRITE));
-                } else {
-                    Queue<Lock> queue = new LinkedList<>();
-                    queue.add(new Lock(transaction, LockType.WRITE));
-                    waitingTransactionMap.put(variable, queue);
-                }
-            }
+            addToWaitingQueue(variable,transaction,LockType.WRITE);
         }
-
-
-
-
     }
 
     /*
@@ -184,7 +184,7 @@ public class TransactionManager {
     * if deadlock, abort youngest transaction
     * */
     public void tick(Instruction currentInstr){
-        checkDeadlock();
+        resourceAllocationGraph.detectDeadlock(transactionMap);
         //System.out.println(currentInstr.transactionType);
         if(currentInstr.transactionType == TransactionType.begin){
             this.beginTransaction(currentInstr.transactionId, currentInstr.timestamp);
@@ -204,6 +204,9 @@ public class TransactionManager {
 
 
     public void checkDeadlock(){
+
+
+
 
         
     }
