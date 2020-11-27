@@ -41,7 +41,7 @@ public class DataManager {
     public boolean getLockOnVariable(Transaction transaction, Variable variable, LockType lockType){
         LockTable temp = this.lockTable;
         boolean isLocked = temp.isVariableLockedByTransaction(variable, transaction, lockType);
-        System.out.println(isLocked +" "+temp.numberOfLocks(variable));
+        //System.out.println(isLocked +" "+temp.numberOfLocks(variable));
         if(isLocked){
             if(temp.numberOfLocks(variable) == 1){
                 this.lockTable.setLock(transaction, variable, lockType);
@@ -58,14 +58,14 @@ public class DataManager {
             return true;
         }
         else{
-            System.out.println("Transaction " + transaction.name + " did not get " + lockType +" on Variable " + variable.name);
+            //System.out.println("Transaction " + transaction.name + " did not get " + lockType +" on Variable " + variable.name);
             return false;
         }
     }
 
     public void writeValueToVariable(Transaction transaction, Variable variable, int value){
         //if(this.lockTable.isVariableLockedByTransaction(variable, transaction, LockType.WRITE)){
-            System.out.println("DataManager, writeValueToVariable -> " + value);
+            //System.out.println("DataManager, writeValueToVariable -> " + value);
             Variable temp = this.variableMap.get(variable.name);
             temp.value = value;
             this.variableMap.replace(variable.name, temp);
