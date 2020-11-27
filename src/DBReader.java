@@ -24,14 +24,14 @@ public class DBReader {
         }else if(transactionType.equalsIgnoreCase(TransactionType.W.getTransactionType())){
             instr.transactionType = TransactionType.W;
             String[] values = str[1].split(",");
-            instr.transactionId = values[0];
-            instr.variableName = values[1];
-            instr.value = Integer.parseInt(values[2]);
+            instr.transactionId = values[0].trim();
+            instr.variableName = values[1].trim();
+            instr.value = Integer.parseInt(values[2].trim());
         }else if(transactionType.equalsIgnoreCase(TransactionType.R.getTransactionType())){
             instr.transactionType = TransactionType.R;
             String[] values = str[1].split(",");
-            instr.transactionId = values[0];
-            instr.variableName = values[1];
+            instr.transactionId = values[0].trim();
+            instr.variableName = values[1].trim();
         }else if(transactionType.equalsIgnoreCase(TransactionType.fail.getTransactionType()) ||
                 transactionType.equalsIgnoreCase(TransactionType.recover.getTransactionType())){
             instr.transactionType = TransactionType.fail;
@@ -39,13 +39,13 @@ public class DBReader {
                 instr.transactionType = TransactionType.recover;
             }
             String[] values = str[1].split(",");
-            instr.site = Integer.parseInt(values[0]);
+            instr.site = Integer.parseInt(values[0].trim());
         }else if(transactionType.equalsIgnoreCase(TransactionType.dump.getTransactionType())){
             instr.transactionType = TransactionType.dump;
         }
         else if(transactionType.equalsIgnoreCase(TransactionType.end.getTransactionType())){
             instr.transactionType = TransactionType.end;
-            instr.transactionId = str[1];
+            instr.transactionId = str[1].trim();
         }
         return instr;
     }

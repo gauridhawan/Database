@@ -25,8 +25,8 @@ public class LockTable {
     }
 
     public boolean isVariableLocked(Variable variable){
-        if(locks.containsKey(variable)){
-            if(locks.get(variable).size() == 0) return false;
+        if(locks.containsKey(variable.name)){
+            if(locks.get(variable.name).size() == 0) return false;
             return true;
         }
         return false;
@@ -34,7 +34,7 @@ public class LockTable {
 
     public boolean isVariableWriteLocked(Variable variable){
         if(isVariableLocked(variable)){
-            Lock lock = locks.get(variable).peek();
+            Lock lock = locks.get(variable.name).peek();
             if(lock.lockType == LockType.WRITE) return true;
             return false;
         }
@@ -43,7 +43,7 @@ public class LockTable {
 
     public boolean isVariableReadLocked(Variable variable){
         if(isVariableLocked(variable)){
-            Lock lock = locks.get(variable).peek();
+            Lock lock = locks.get(variable.name).peek();
             if(lock.lockType == LockType.READ) return true;
             return false;
         }
@@ -51,14 +51,14 @@ public class LockTable {
     }
 
     public void freeLocks(Variable variable){
-        locks.remove(variable);
+        locks.remove(variable.name);
     }
 
     public boolean clearVariableLock(Variable variable, Lock lock){
-        if(locks.containsKey(variable)){
-            Queue<Lock> tempQueue = locks.get(variable);
+        if(locks.containsKey(variable.name)){
+            Queue<Lock> tempQueue = locks.get(variable.name);
             tempQueue.remove(lock);
-            if(tempQueue.size() == 0) locks.remove(variable);
+            if(tempQueue.size() == 0) locks.remove(variable.name);
             else locks.replace(variable.name, tempQueue);
             return true;
         }
@@ -66,8 +66,8 @@ public class LockTable {
     }
 
     public boolean isVariableLockedByTransaction(Variable variable, Transaction transaction, LockType lockType){
-        if(locks.containsKey(variable)){
-            Queue<Lock> tempQueue = locks.get(variable);
+        if(locks.containsKey(variable.name)){
+            Queue<Lock> tempQueue = locks.get(variable.name);
             if(tempQueue.contains(new Lock(transaction.name, lockType))) return true;
             return false;
         }
