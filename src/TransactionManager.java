@@ -96,10 +96,8 @@ public class TransactionManager {
     * TODO : update read only part
     * */
     public boolean readRequest(String transactionId, int timestamp, String variable){
-
         Transaction transaction = transactionMap.get(transactionId);
         int variableIndex = Integer.parseInt(variable.substring(1));
-
         if(transaction.getTransactionStatus() == TransactionStatus.ABORTED){
             return true;
         }
@@ -117,15 +115,20 @@ public class TransactionManager {
                 return false;
             }
         }else{
-            int lockAcquired = siteManager.getLock(transaction, variableIndex, LockType.READ);
+            Pair<Site, Integer> siteLock = siteManager.getLock(transaction, variableIndex, LockType.READ);
+            int lockAcquired = siteLock.value;
             System.out.println("######### " + lockAcquired);
-
             if(lockAcquired == LockStatus.GOT_LOCK.getLockStatus() || lockAcquired == LockStatus.GOT_LOCK_RECOVERING.getLockStatus()){
                 resourceAllocationGraph.addGetLockEdge(variable,transactionId);
-
-                Pair<Site, Integer> variableSitePair = siteManager.getVariableValues().get("x"+variableIndex);
-                int variableValue = variableSitePair.value;
-                Site site = variableSitePair.key;
+                List<Variable> variables = siteLock.key.getAllVariables();
+                int variableValue = -1;
+                for(Variable var : variables){
+                    if(var.name.equals(variable)){
+                        variableValue = var.value;
+                    }
+                }
+                //Pair<Site, Integer> variableSitePair = siteManager.getVariableValues().get("x"+variableIndex);
+                Site site = siteLock.key;
                 transaction.sitesAccessed.add(new Pair<>(site, currentTimeStamp));
                 printVariableValue("x"+variableIndex, variableValue);
                 transaction.variablesAccessed.add(variable);
@@ -136,7 +139,6 @@ public class TransactionManager {
                 return false;
             }
         }
-
     }
 
     private void addToWaitingQueue(String variable, Transaction transaction, LockType lockType, int value) {
@@ -170,7 +172,7 @@ public class TransactionManager {
                 Queue<Lock> locks = this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.getOrDefault(variable, new LinkedList<>());
                 Queue<Lock> ans = new LinkedList<>();
                 for(Lock lock : locks){
-                    if(lock.transactionId != transaction.name) ans.add(lock);
+                    if(!lock.transactionId.equals(transaction.name)) ans.add(lock);
                 }
                 this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.put(variable, ans);
             }
@@ -184,11 +186,11 @@ public class TransactionManager {
             // So that it exits from the waiting transactions queue
             return true;
         }
-
-        if (siteManager.getLock(transaction,variableIndex,LockType.WRITE) == LockStatus.GOT_LOCK.getLockStatus()){
+        Pair<Site, Integer> siteLock = siteManager.getLock(transaction, variableIndex, LockType.WRITE);
+        int lockAcquired = siteLock.value;
+        if (lockAcquired == LockStatus.GOT_LOCK.getLockStatus()){
             resourceAllocationGraph.addGetLockEdge(variable,transactionId);
             Map<String, Pair<Integer,List<Site>>> uncommittedVars =  transaction.getUncommittedVariables();
-
             List<Site> sitesToBeUpdated = new ArrayList<>();
             if(variableIndex%2==0) {
                 for (Site site : siteManager.sites) {

@@ -68,7 +68,9 @@ public class LockTable {
     public boolean isVariableLockedByTransaction(Variable variable, Transaction transaction, LockType lockType){
         if(locks.containsKey(variable.name)){
             Queue<Lock> tempQueue = locks.get(variable.name);
-            if(tempQueue.contains(new Lock(transaction.name, lockType))) return true;
+            for(Lock lock : tempQueue){
+                if(lock.transactionId == transaction.name && lock.lockType == lockType) return true;
+            }
             return false;
         }
         return false;

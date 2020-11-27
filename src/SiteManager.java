@@ -71,10 +71,9 @@ public class SiteManager {
     }
 
 
-    public int getLock(Transaction transaction, int variable, LockType lockType){
+    public Pair<Site, Integer> getLock(Transaction transaction, int variable, LockType lockType){
         int value = Variable.getSites(variable);
         List<Site> sites = this.getSites(value);
-
         boolean flag = true;
         int recoveringFlag = 0;
         int allSitesDown = 1;
@@ -98,21 +97,21 @@ public class SiteManager {
             boolean state = this.sites.get(site.index).getLock(transaction, temp, lockType);
             if(state && lockType == LockType.READ){
                 if(recoveringFlag == 1){
-                    return LockStatus.GOT_LOCK_RECOVERING.getLockStatus();
+                    return new Pair(site,LockStatus.GOT_LOCK_RECOVERING.getLockStatus());
                 }
                 else{
-                    return LockStatus.GOT_LOCK.getLockStatus();
+                    return new Pair(site,LockStatus.GOT_LOCK.getLockStatus());
                 }
             }
             flag &= state;
         }
         if(allSitesDown == 1){
-            return LockStatus.ALL_SITES_DOWN.getLockStatus();
+            return new Pair(null,LockStatus.ALL_SITES_DOWN.getLockStatus());
         }
         else if (!flag){
-            return LockStatus.NO_LOCK.getLockStatus();
+            return new Pair(null,LockStatus.NO_LOCK.getLockStatus());
         }
-        return LockStatus.GOT_LOCK.getLockStatus();
+        return new Pair(sites.get(0),LockStatus.GOT_LOCK.getLockStatus());
     }
 
     void fail(int id, int time){
