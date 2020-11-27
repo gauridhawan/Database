@@ -42,7 +42,7 @@ public class TransactionManager {
         }
 
         Map<String,Pair<Integer,List<Site>>> uncommittedVariables = transaction.getUncommittedVariables();
-        System.out.println(uncommittedVariables);
+        //System.out.println(uncommittedVariables);
         for(String variable : uncommittedVariables.keySet()){
             // Write the variable at their resp sites
             List<Site> sitesToBeUpdated = uncommittedVariables.get(variable).value;
@@ -103,7 +103,7 @@ public class TransactionManager {
         }
         if(transaction.isReadOnly()){
             Map<String, Integer> variableValueAtTransactionStart = transaction.getCommittedValues();
-            System.out.println(variableValueAtTransactionStart);
+            //System.out.println(variableValueAtTransactionStart);
             if(variableValueAtTransactionStart.containsKey(variable)){
                 printVariableValue(variable, variableValueAtTransactionStart.get(variable));
                 return true;
@@ -259,7 +259,7 @@ public class TransactionManager {
     }
 
     public void tryWaitingTransactions(){
-        System.out.println(waitingTransactionMap.keySet());
+        //System.out.println(waitingTransactionMap.keySet());
         for(String variable : waitingTransactionMap.keySet()){
             Queue<Pair<Lock, Integer>> queue = waitingTransactionMap.get(variable);
             if(queue.isEmpty()){
@@ -273,7 +273,7 @@ public class TransactionManager {
             else{
                 flag &= this.writeRequest(lock.transaction.name, variable, queue.peek().value);
             }
-            System.out.println(flag +" "+ lock.transaction.uncommittedVariables);
+            //System.out.println(flag +" "+ lock.transaction.uncommittedVariables);
             if(flag){
                 queue.poll();
                 if(!queue.isEmpty()){

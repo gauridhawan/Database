@@ -34,7 +34,7 @@ public class ResourceAllocationGraph {
                 break;
             }
         }
-        System.out.println("Cycles -> " + transactionsInCycle);
+        //System.out.println("Cycles -> " + transactionsInCycle);
         if(isCyclePresent && transactionsInCycle.size() > 1){
             removeCycle(transactionMap, transactionsInCycle);
         }
