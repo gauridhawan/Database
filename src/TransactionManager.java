@@ -31,7 +31,7 @@ public class TransactionManager {
         }
         if(!transaction.isReadOnly()){
             for(Pair<Site, Integer> siteAccessed : transaction.getSitesAccessed()){
-                System.out.println(transactionId +" "+ siteAccessed.key.lastFailedTime +" "+siteAccessed.value);
+                //System.out.println(transactionId +" "+ siteAccessed.key.lastFailedTime +" "+siteAccessed.value);
                 if(siteAccessed.key.getLastFailedTime() > siteAccessed.value){
                     // transaction cannot go forward since it failed since the transaction started
                     //System.out.println(transactionId +" "+siteAccessed.getLastFailedTime()+" "+transaction.getStartTime());
@@ -172,7 +172,7 @@ public class TransactionManager {
                 Queue<Lock> locks = this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.getOrDefault(variable, new LinkedList<>());
                 Queue<Lock> ans = new LinkedList<>();
                 for(Lock lock : locks){
-                    System.out.println("Locks : " + transactionId + " " + lock.transactionId +" "+ lock.lockType);
+                 //   System.out.println("Locks : " + transactionId + " " + lock.transactionId +" "+ lock.lockType);
                     if(!lock.transactionId.equals(transaction.name)) {
                         ans.add(lock);
                     }
@@ -285,9 +285,9 @@ public class TransactionManager {
     }
 
     public void tick(Instruction currentInstr){
-        //resourceAllocationGraph.detectDeadlock(transactionMap);
-        //clearAbortedTransactions(transactionMap);
-        //tryWaitingReadOnly();
+        resourceAllocationGraph.detectDeadlock(transactionMap);
+        clearAbortedTransactions(transactionMap);
+        tryWaitingReadOnly();
         tryWaitingTransactions();
         //System.out.println(currentInstr.transactionType);
         if(currentInstr.transactionType == TransactionType.begin){
