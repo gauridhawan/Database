@@ -12,11 +12,12 @@ public class LockTable {
 
     public void setLock(Transaction transaction, Variable variable, LockType lockType){
         Lock lock = new Lock(transaction.name, lockType);
-        Queue<Lock> tempQueue = locks.getOrDefault(variable.name, new LinkedList<Lock>());
-        for(Lock locks : tempQueue){
+        Queue<Lock> existingLocks = locks.getOrDefault(variable.name, new LinkedList<Lock>());
+        for(Lock locks : existingLocks){
             if(locks.transactionId.equals(transaction.name) && lock.lockType.equals(lockType)) return;
         }
-        tempQueue.add(new Lock(transaction.name, lockType));
+        existingLocks.add(new Lock(transaction.name, lockType));
+        locks.put(variable.name,existingLocks);
     }
 
     public boolean isVariableLocked(Variable variable){

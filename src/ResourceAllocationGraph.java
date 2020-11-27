@@ -35,7 +35,7 @@ public class ResourceAllocationGraph {
             }
         }
         //System.out.println("Cycles -> " + transactionsInCycle);
-        if(isCyclePresent && transactionsInCycle.size() > 1){
+        if(isCyclePresent && transactionsInCycle.size() >= 1 && transactionsInCycle.get(0).size() > 1){
             removeCycle(transactionMap, transactionsInCycle);
         }
 
@@ -54,6 +54,7 @@ public class ResourceAllocationGraph {
                 }
             }
 
+            System.out.println(youngestTransaction.name+" aborts");
             youngestTransaction.setTransactionStatus(TransactionStatus.ABORTED);
             adjMap.remove(youngestTransaction.name);
             for(Map.Entry<String,ArrayList<String>> entry : adjMap.entrySet()){
