@@ -104,7 +104,7 @@ public class SiteManager {
                 }
             }
             flag &= state;
-            System.out.println("Getlock : " + state);
+            //System.out.println("Getlock : " + state);
         }
         if(allSitesDown == 1){
             return new Pair(null,LockStatus.ALL_SITES_DOWN.getLockStatus());

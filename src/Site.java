@@ -104,7 +104,7 @@ public class Site {
             }
         }
         this.siteStatus = SiteStatus.RECOVERING;
-        System.out.println("Recovered Vairables : " + this.recoveredVariables);
+        //System.out.println("Recovered Vairables : " + this.recoveredVariables);
     }
 
     public List<Variable> getAllVariables(){
