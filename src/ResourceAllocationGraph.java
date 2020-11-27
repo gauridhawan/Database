@@ -27,11 +27,18 @@ public class ResourceAllocationGraph {
 
         List<List<String>> transactionsInCycle = new ArrayList<>();
         Map<String,Integer> visitedTransactions = new HashMap<>();
+        boolean isCyclePresent = false;
         for(String transaction : transactionSet){
-            dfs(transaction, visitedTransactions, new ArrayList(), transactionsInCycle);
+            if(hasCycle(transaction, visitedTransactions, new ArrayList(), transactionsInCycle)){
+                isCyclePresent = true;
+                break;
+            }
         }
         System.out.println("Cycles -> " + transactionsInCycle);
-        removeCycle(transactionMap, transactionsInCycle);
+        if(isCyclePresent && transactionsInCycle.size() > 1){
+            removeCycle(transactionMap, transactionsInCycle);
+        }
+
     }
 
     private void removeCycle(Map<String, Transaction> transactionMap, List<List<String>> transactionsInCycle) {
@@ -56,21 +63,22 @@ public class ResourceAllocationGraph {
         }
     }
 
-    public void dfs(String currentTransaction, Map<String, Integer> visitedTransactions, List<String> transactionPath,
+    public boolean hasCycle(String currentTransaction, Map<String, Integer> visitedTransactions, List<String> transactionPath,
                     List<List<String>> transactionsInCycle){
 
         if(visitedTransactions.containsKey(currentTransaction)){
             int cycleStartIndex = visitedTransactions.get(currentTransaction);
             transactionsInCycle.add(new ArrayList<>(transactionPath.subList(cycleStartIndex, transactionPath.size())));
-            return;
+            return true;
         }
         if(currentTransaction.startsWith("T")){
             visitedTransactions.put(currentTransaction,transactionPath.size());
             transactionPath.add(currentTransaction);
         }
 
-        for(String neighbour : adjMap.get(currentTransaction)){
-            dfs(neighbour, visitedTransactions, transactionPath, transactionsInCycle);
+        boolean result = false;
+        for(String neighbour : adjMap.getOrDefault(currentTransaction, new ArrayList<>())){
+           result = result || hasCycle(neighbour, visitedTransactions, transactionPath, transactionsInCycle);
         }
 
         if(currentTransaction.startsWith("T")){
@@ -78,5 +86,6 @@ public class ResourceAllocationGraph {
             transactionPath.remove(transactionPath.size()-1);
         }
 
+        return result;
     }
 }

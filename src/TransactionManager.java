@@ -11,7 +11,8 @@ public class TransactionManager {
     int numberOfVariables = 20;
     Map<String,Transaction> transactionMap = new HashMap<>();
     Map<String, List<Pair<String,Integer>>> transactionWritePermission = new HashMap<>();
-    Map<String, Queue<Lock>> waitingTransactionMap = new HashMap<>();
+    List<Pair<Transaction, String>> waitingReadOnly = new ArrayList<>();
+    Map<String, Queue<Pair<Lock,Integer>>> waitingTransactionMap = new HashMap<>();
     int currentTimeStamp;
     SiteManager siteManager = new SiteManager(numberOfSites, numberOfVariables);
     ResourceAllocationGraph resourceAllocationGraph = new ResourceAllocationGraph();
@@ -94,46 +95,57 @@ public class TransactionManager {
     *
     * TODO : update read only part
     * */
-    public void readRequest(String transactionId, int timestamp, String variable){
+    public boolean readRequest(String transactionId, int timestamp, String variable){
 
         Transaction transaction = transactionMap.get(transactionId);
         int variableIndex = Integer.parseInt(variable.substring(1));
 
+        if(transaction.getTransactionStatus() == TransactionStatus.ABORTED){
+            return true;
+        }
         if(transaction.isReadOnly()){
             Map<String, Integer> variableValueAtTransactionStart = transaction.getCommittedValues();
             System.out.println(variableValueAtTransactionStart);
             if(variableValueAtTransactionStart.containsKey(variable)){
                 printVariableValue(variable, variableValueAtTransactionStart.get(variable));
+                return true;
             }else{
-                transaction.setTransactionStatus(TransactionStatus.WAITING);
+                if(transaction.transactionStatus != TransactionStatus.WAITING) {
+                    transaction.setTransactionStatus(TransactionStatus.WAITING);
+                    waitingReadOnly.add(new Pair(transaction, variable));
+                }
+                return false;
             }
-
         }else{
             int lockAcquired = siteManager.getLock(transaction, variableIndex, LockType.READ);
             System.out.println("######### " + lockAcquired);
-            if(lockAcquired == LockStatus.GOT_LOCK.getLockStatus()){
+
+            if(lockAcquired == LockStatus.GOT_LOCK.getLockStatus() || lockAcquired == LockStatus.GOT_LOCK_RECOVERING.getLockStatus()){
                 resourceAllocationGraph.addGetLockEdge(variable,transactionId);
+
                 Pair<Site, Integer> variableSitePair = siteManager.getVariableValues().get("x"+variableIndex);
                 int variableValue = variableSitePair.value;
                 Site site = variableSitePair.key;
                 transaction.sitesAccessed.add(new Pair<>(site, currentTimeStamp));
                 printVariableValue("x"+variableIndex, variableValue);
-
+                transaction.variablesAccessed.add(variable);
+                return true;
             }
             else{
-                addToWaitingQueue(variable, transaction, LockType.READ);
+                addToWaitingQueue(variable, transaction, LockType.READ, -1);
+                return false;
             }
         }
 
     }
 
-    private void addToWaitingQueue(String variable, Transaction transaction, LockType lockType) {
+    private void addToWaitingQueue(String variable, Transaction transaction, LockType lockType, int value) {
         if(transaction.transactionStatus != TransactionStatus.WAITING) {
             if (waitingTransactionMap.containsKey(variable)) {
-                waitingTransactionMap.get(variable).add(new Lock(transaction, lockType));
+                waitingTransactionMap.get(variable).add(new Pair(new Lock(transaction, lockType), value));
             } else {
-                Queue<Lock> queue = new LinkedList<>();
-                queue.add(new Lock(transaction, LockType.READ));
+                Queue<Pair<Lock, Integer>> queue = new LinkedList<>();
+                queue.add(new Pair(new Lock(transaction, lockType), value));
                 waitingTransactionMap.put(variable, queue);
             }
             transaction.setTransactionStatus(TransactionStatus.WAITING);
@@ -155,19 +167,23 @@ public class TransactionManager {
         Transaction transaction = this.transactionMap.get(transactionId);
         for(Pair<Site, Integer> siteAccessed : transaction.sitesAccessed){
             for(String variable : transaction.variablesAccessed){
-                Queue<Lock> locks = this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.get(variable);
+                Queue<Lock> locks = this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.getOrDefault(variable, new LinkedList<>());
                 Queue<Lock> ans = new LinkedList<>();
                 for(Lock lock : locks){
-                    if(lock.transaction.name != transaction.name) ans.add(lock);
+                    if(lock.transactionId != transaction.name) ans.add(lock);
                 }
                 this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.put(variable, ans);
             }
         }
     }
 
-    public void writeRequest(String transactionId, String variable, int value){
+    public boolean writeRequest(String transactionId, String variable, int value){
         int variableIndex = Integer.parseInt(variable.substring(1));
         Transaction transaction = transactionMap.get(transactionId);
+        if(transaction.getTransactionStatus() == TransactionStatus.ABORTED){
+            // So that it exits from the waiting transactions queue
+            return true;
+        }
 
         if (siteManager.getLock(transaction,variableIndex,LockType.WRITE) == LockStatus.GOT_LOCK.getLockStatus()){
             resourceAllocationGraph.addGetLockEdge(variable,transactionId);
@@ -188,9 +204,12 @@ public class TransactionManager {
                 transaction.sitesAccessed.add(new Pair<>(site,currentTimeStamp));
             }
             uncommittedVars.put(variable,new Pair<>(value,sitesToBeUpdated));
+            transaction.variablesAccessed.add(variable);
+            return true;
         }
         else{
-            addToWaitingQueue(variable,transaction,LockType.WRITE);
+            addToWaitingQueue(variable,transaction,LockType.WRITE, value);
+            return false;
         }
     }
 
@@ -209,9 +228,44 @@ public class TransactionManager {
         }
     }
 
+    public void tryWaitingReadOnly(){
+        for(Pair<Transaction, String> pair : this.waitingReadOnly){
+            Transaction transaction = pair.key;
+            String variable = pair.value;
+            readRequest(transaction.name, currentTimeStamp, variable);
+        }
+    }
+
+    public void tryWaitingTransactions(){
+        System.out.println(waitingTransactionMap.keySet());
+        for(String variable : waitingTransactionMap.keySet()){
+            Queue<Pair<Lock, Integer>> queue = waitingTransactionMap.get(variable);
+            if(queue.isEmpty()){
+               continue;
+            }
+            Lock lock = queue.peek().key;
+            boolean flag = true;
+            if(lock.lockType == LockType.READ){
+                flag &= this.readRequest(lock.transaction.name, currentTimeStamp, variable);
+            }
+            else{
+                flag &= this.writeRequest(lock.transaction.name, variable, queue.peek().value);
+            }
+            if(flag){
+                queue.poll();
+                if(!queue.isEmpty()){
+                    waitingTransactionMap.replace(variable, queue);
+                }
+                //else waitingTransactionMap.remove(variable);
+            }
+        }
+    }
+
     public void tick(Instruction currentInstr){
         resourceAllocationGraph.detectDeadlock(transactionMap);
         clearAbortedTransactions(transactionMap);
+        tryWaitingReadOnly();
+        tryWaitingTransactions();
         //System.out.println(currentInstr.transactionType);
         if(currentInstr.transactionType == TransactionType.begin){
             this.beginTransaction(currentInstr.transactionId, currentInstr.timestamp);
