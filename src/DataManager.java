@@ -41,6 +41,7 @@ public class DataManager {
     public boolean getLockOnVariable(Transaction transaction, Variable variable, LockType lockType){
         LockTable temp = this.lockTable;
         boolean isLocked = temp.isVariableLockedByTransaction(variable, transaction, lockType);
+        System.out.println(isLocked +" "+temp.numberOfLocks(variable));
         if(isLocked){
             if(temp.numberOfLocks(variable) == 1){
                 this.lockTable.setLock(transaction, variable, lockType);
@@ -57,7 +58,7 @@ public class DataManager {
             return true;
         }
         else{
-            System.out.println("Transaction " + transaction.toString() + "did not get" + lockType.toString() +" on Variable " + variable.toString());
+            System.out.println("Transaction " + transaction.name + " did not get " + lockType +" on Variable " + variable.name);
             return false;
         }
     }

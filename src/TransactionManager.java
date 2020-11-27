@@ -172,12 +172,32 @@ public class TransactionManager {
                 Queue<Lock> locks = this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.getOrDefault(variable, new LinkedList<>());
                 Queue<Lock> ans = new LinkedList<>();
                 for(Lock lock : locks){
+                    System.out.println("Locks : " + transactionId + " " + lock.transactionId +" "+ lock.lockType);
+                    if(!lock.transactionId.equals(transaction.name)) {
+                        ans.add(lock);
+                    }
+                }
+                this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.put(variable, ans);
+            }
+        }
+    }
+
+    /*
+    public void clearLocks(String transactionId){
+        Transaction transaction = this.transactionMap.get(transactionId);
+        for(Pair<Site, Integer> siteAccessed : transaction.sitesAccessed){
+            for(String variable : transaction.variablesAccessed){
+                Queue<Lock> locks = this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.getOrDefault(variable, new LinkedList<>());
+                Queue<Lock> ans = new LinkedList<>();
+                for(Lock lock : locks){
                     if(!lock.transactionId.equals(transaction.name)) ans.add(lock);
                 }
                 this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.put(variable, ans);
             }
         }
     }
+    */
+
 
     public boolean writeRequest(String transactionId, String variable, int value){
         int variableIndex = Integer.parseInt(variable.substring(1));
@@ -253,6 +273,7 @@ public class TransactionManager {
             else{
                 flag &= this.writeRequest(lock.transaction.name, variable, queue.peek().value);
             }
+            System.out.println(flag +" "+ lock.transaction.uncommittedVariables);
             if(flag){
                 queue.poll();
                 if(!queue.isEmpty()){
@@ -264,9 +285,9 @@ public class TransactionManager {
     }
 
     public void tick(Instruction currentInstr){
-        resourceAllocationGraph.detectDeadlock(transactionMap);
-        clearAbortedTransactions(transactionMap);
-        tryWaitingReadOnly();
+        //resourceAllocationGraph.detectDeadlock(transactionMap);
+        //clearAbortedTransactions(transactionMap);
+        //tryWaitingReadOnly();
         tryWaitingTransactions();
         //System.out.println(currentInstr.transactionType);
         if(currentInstr.transactionType == TransactionType.begin){

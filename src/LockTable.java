@@ -10,18 +10,13 @@ public class LockTable {
         else return 0;
     }
 
-    public boolean setLock(Transaction transaction, Variable variable, LockType lockType){
+    public void setLock(Transaction transaction, Variable variable, LockType lockType){
         Lock lock = new Lock(transaction.name, lockType);
-        if(locks.containsKey(variable.name)){
-            locks.get(variable.name).add(lock);
-            return false;
+        Queue<Lock> tempQueue = locks.getOrDefault(variable.name, new LinkedList<Lock>());
+        for(Lock locks : tempQueue){
+            if(locks.transactionId.equals(transaction.name) && lock.lockType.equals(lockType)) return;
         }
-        else{
-            Queue<Lock> tempQueue = new LinkedList<>();
-            tempQueue.add(lock);
-            locks.put(variable.name, tempQueue);
-            return true;
-        }
+        tempQueue.add(new Lock(transaction.name, lockType));
     }
 
     public boolean isVariableLocked(Variable variable){
@@ -69,7 +64,7 @@ public class LockTable {
         if(locks.containsKey(variable.name)){
             Queue<Lock> tempQueue = locks.get(variable.name);
             for(Lock lock : tempQueue){
-                if(lock.transactionId == transaction.name && lock.lockType == lockType) return true;
+                if(lock.transactionId == transaction.name) return true;
             }
             return false;
         }
