@@ -172,7 +172,7 @@ public class TransactionManager {
                 Queue<Lock> locks = this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.getOrDefault(variable, new LinkedList<>());
                 Queue<Lock> ans = new LinkedList<>();
                 for(Lock lock : locks){
-                 //   System.out.println("Locks : " + transactionId + " " + lock.transactionId +" "+ lock.lockType);
+                    //System.out.println("Locks : " + transactionId + " " + lock.transactionId +" "+ lock.lockType);
                     if(!lock.transactionId.equals(transaction.name)) {
                         ans.add(lock);
                     }
@@ -260,6 +260,7 @@ public class TransactionManager {
 
     public void tryWaitingTransactions(){
         //System.out.println(waitingTransactionMap.keySet());
+        //System.out.println(waitingTransactionMap.entrySet());
         for(String variable : waitingTransactionMap.keySet()){
             Queue<Pair<Lock, Integer>> queue = waitingTransactionMap.get(variable);
             if(queue.isEmpty()){
@@ -271,10 +272,12 @@ public class TransactionManager {
                 flag &= this.readRequest(lock.transaction.name, currentTimeStamp, variable);
             }
             else{
+                System.out.println("Transaction " + lock.transactionId + " trying " + lock.lockType);
                 flag &= this.writeRequest(lock.transaction.name, variable, queue.peek().value);
             }
             //System.out.println(flag +" "+ lock.transaction.uncommittedVariables);
             if(flag){
+                System.out.println("Transaction " + lock.transactionId + " got " + lock.lockType);
                 queue.poll();
                 if(!queue.isEmpty()){
                     waitingTransactionMap.replace(variable, queue);

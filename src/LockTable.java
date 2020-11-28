@@ -12,7 +12,7 @@ public class LockTable {
 
     public void setLock(Transaction transaction, Variable variable, LockType lockType){
         Lock lock = new Lock(transaction.name, lockType);
-        Queue<Lock> existingLocks = locks.getOrDefault(variable.name, new LinkedList<Lock>());
+        Queue<Lock> existingLocks = locks.getOrDefault(variable.name, new LinkedList<>());
         for(Lock locks : existingLocks){
             if(locks.transactionId.equals(transaction.name) && lock.lockType.equals(lockType)) return;
         }
@@ -30,8 +30,10 @@ public class LockTable {
 
     public boolean isVariableWriteLocked(Variable variable){
         if(isVariableLocked(variable)){
-            Lock lock = locks.get(variable.name).peek();
-            if(lock.lockType == LockType.WRITE) return true;
+            Queue<Lock> queue = locks.get(variable.name);
+            for(Lock lock : queue) {
+                if (lock.lockType.equals(LockType.WRITE)) return true;
+            }
             return false;
         }
         return false;
