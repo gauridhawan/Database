@@ -115,6 +115,12 @@ public class TransactionManager {
                 return false;
             }
         }else{
+            if(transaction.uncommittedVariables.containsKey(variable)){
+                Pair<Integer, List<Site>> variableValue = transaction.uncommittedVariables.get(variable);
+                printVariableValue("x"+variableIndex, variableValue.key);
+                transaction.variablesAccessed.add(variable);
+                return true;
+            }
             Pair<Site, Integer> siteLock = siteManager.getLock(transaction, variableIndex, LockType.READ);
             int lockAcquired = siteLock.value;
             //System.out.println("######### " + lockAcquired);
