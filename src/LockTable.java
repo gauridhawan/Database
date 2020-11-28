@@ -67,7 +67,7 @@ public class LockTable {
         if(locks.containsKey(variable.name)){
             Queue<Lock> tempQueue = locks.get(variable.name);
             for(Lock lock : tempQueue){
-                if(lock.transactionId == transaction.name) return true;
+                if(lock.transactionId.equals(transaction.name)) return true;
             }
             return false;
         }
