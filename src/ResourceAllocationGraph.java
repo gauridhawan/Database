@@ -20,11 +20,11 @@ public class ResourceAllocationGraph {
         ArrayList<Pair<String,LockType>> newAdjList = new ArrayList<>();
         for(Pair<String,LockType> edge : requestedAdjList){
             if(lockType == LockType.WRITE){
-                if(edge.key == start){
+                if(edge.key.equalsIgnoreCase(start)){
                     continue;
                 }
             }else{
-                if(edge.key == start && edge.value == LockType.READ){
+                if(edge.key.equalsIgnoreCase(start) && edge.value == LockType.READ){
                     continue;
                 }
             }
