@@ -43,6 +43,9 @@ public class DataManager {
         boolean isLocked = temp.isVariableLockedByTransaction(variable, transaction, lockType);
         //System.out.println(isLocked +" "+temp.numberOfLocks(variable));
         if(isLocked){
+
+            if(temp.isVariableWriteLocked(variable)) return true;
+
             if(temp.numberOfLocks(variable) == 1){
                 this.lockTable.setLock(transaction, variable, lockType);
                 return true;
@@ -54,10 +57,12 @@ public class DataManager {
             return true;
         }
         else if(lockType == LockType.READ && !temp.isVariableWriteLocked(variable)){
+            //System.out.println(this.lockTable.locks);
             this.lockTable.setLock(transaction, variable, lockType);
             return true;
         }
         else{
+            this.lockTable.setLock(transaction, variable, lockType);
             //System.out.println("Transaction " + transaction.name + " did not get " + lockType +" on Variable " + variable.name);
             return false;
         }
