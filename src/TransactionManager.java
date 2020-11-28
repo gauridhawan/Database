@@ -115,6 +115,12 @@ public class TransactionManager {
                 return false;
             }
         }else{
+            if(transaction.uncommittedVariables.containsKey(variable)){
+                Pair<Integer, List<Site>> variableValue = transaction.uncommittedVariables.get(variable);
+                printVariableValue("x"+variableIndex, variableValue.key);
+                transaction.variablesAccessed.add(variable);
+                return true;
+            }
             Pair<Site, Integer> siteLock = siteManager.getLock(transaction, variableIndex, LockType.READ);
             int lockAcquired = siteLock.value;
             System.out.println("######### " + lockAcquired);
@@ -272,12 +278,12 @@ public class TransactionManager {
                 flag &= this.readRequest(lock.transaction.name, currentTimeStamp, variable);
             }
             else{
-                System.out.println("Transaction " + lock.transactionId + " trying " + lock.lockType);
+                //System.out.println("Transaction " + lock.transactionId + " trying " + lock.lockType);
                 flag &= this.writeRequest(lock.transaction.name, variable, queue.peek().value);
             }
             //System.out.println(flag +" "+ lock.transaction.uncommittedVariables);
             if(flag){
-                System.out.println("Transaction " + lock.transactionId + " got " + lock.lockType);
+                //System.out.println("Transaction " + lock.transactionId + " got " + lock.lockType);
                 queue.poll();
                 if(!queue.isEmpty()){
                     waitingTransactionMap.replace(variable, queue);
