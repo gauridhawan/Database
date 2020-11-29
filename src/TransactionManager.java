@@ -116,6 +116,7 @@ public class TransactionManager {
             }
         }else{
             if(transaction.uncommittedVariables.containsKey(variable)){
+                resourceAllocationGraph.addGetLockEdge(variable,transactionId, LockType.WRITE);
                 Pair<Integer, List<Site>> variableValue = transaction.uncommittedVariables.get(variable);
                 printVariableValue("x"+variableIndex, variableValue.key);
                 transaction.variablesAccessed.add(variable);
