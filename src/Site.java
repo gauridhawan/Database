@@ -87,6 +87,7 @@ public class Site {
         this.lastFailedTime = time;
         LockTable temp = this.dataManager.getLockTable();
         HashMap<String, Queue<Lock>> locks= temp.locks;
+        temp.locks.clear();
         //for(String variable : locks.keySet()){
         //    Queue<Lock> queue = locks.get(variable);
         //    for(Lock lock: queue){

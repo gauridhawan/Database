@@ -184,7 +184,8 @@ public class TransactionManager {
             if (waitingTransactionMap.containsKey(variable)) {
                 boolean isAlreadyPresent = false;
                 for(Pair<Lock,Integer> waitingTrasanction : waitingTransactionMap.get(variable)){
-                    if(waitingTrasanction.key.transaction.name == transaction.name){
+                    if(waitingTrasanction.key.transaction.name.equals(transaction.name)
+                            && waitingTrasanction.key.lockType == lockType){
                         isAlreadyPresent = true;
                     }
                 }
@@ -206,6 +207,7 @@ public class TransactionManager {
         //System.out.println(transactionId);
         boolean isCommitted = commitTransaction(transactionId);
         this.clearLocks(transactionId);
+        this.clearWaitingTransactions(transactionId);
         if(isCommitted){
             System.out.println(transactionId+" commits");
         }else{
@@ -307,6 +309,36 @@ public class TransactionManager {
                 clearLocks(str);
             }
         }
+
+    }
+
+    public void clearWaitingLocks(String transactionId, LockType lockType){
+        Transaction transaction = this.transactionMap.get(transactionId);
+        for(Site site : this.siteManager.sites){
+            for(String variable : transaction.variablesAccessed){
+                Queue<Lock> locks1 = site.dataManager.lockTable.waitingLocks.getOrDefault(variable, new LinkedList<>());
+                Queue<Lock> ans1 = new LinkedList<>();
+                for(Lock lock : locks1){
+                    //System.out.println("Locks : " + transactionId + " " + lock.transactionId +" "+ lock.lockType);
+                    if(!(lock.transactionId.equals(transaction.name) && lock.lockType.equals(lockType))) {
+                        ans1.add(lock);
+                    }
+                }
+                site.dataManager.lockTable.waitingLocks.put(variable, ans1);
+            }
+        }
+    }
+
+    public void clearWaitingTransactions(String transactionId){
+        for(String str : waitingTransactionMap.keySet()){
+            Queue<Pair<Lock,Integer>> currentTransactions = new LinkedList<>();
+            for(Pair<Lock, Integer> transaction : waitingTransactionMap.get(str)){
+                if(!transaction.key.transactionId.equals(transactionId)){
+                    currentTransactions.add(transaction);
+                }
+            }
+            waitingTransactionMap.replace(str,currentTransactions);
+        }
     }
 
     public void tryWaitingReadOnly(){
@@ -326,6 +358,7 @@ public class TransactionManager {
     public void tryWaitingTransactions(){
         //System.out.println(waitingTransactionMap.keySet());
         //System.out.println(waitingTransactionMap.entrySet());
+        boolean b = false;
         for(String variable : waitingTransactionMap.keySet()){
             Queue<Pair<Lock, Integer>> queue = waitingTransactionMap.get(variable);
             if(queue.isEmpty()){
@@ -342,13 +375,18 @@ public class TransactionManager {
             }
             //System.out.println(flag +" "+ lock.transaction.uncommittedVariables);
             if(flag){
+                b = true;
                 //System.out.println("Transaction " + lock.transactionId + " got " + lock.lockType);
                 queue.poll();
                 if(!queue.isEmpty()){
                     waitingTransactionMap.replace(variable, queue);
                 }
+                clearWaitingLocks(lock.transactionId, lock.lockType);
                 //else waitingTransactionMap.remove(variable);
             }
+        }
+        if(b){
+            tryWaitingTransactions();
         }
     }
 
