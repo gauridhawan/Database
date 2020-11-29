@@ -84,6 +84,7 @@ public class ResourceAllocationGraph {
 
             if(isCycleToBeRemoved){
                 removeCycle(transactionMap, transactionsInCycle);
+                detectDeadlock(transactionMap);
             }
         }
 

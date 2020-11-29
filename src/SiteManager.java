@@ -31,6 +31,20 @@ public class SiteManager {
         }
     }
 
+    public HashMap<String, Pair<Site,Integer>> getOddVariableValues(){
+
+        HashMap<String, Pair<Site,Integer>> ans = new HashMap<>();
+        for(Site site : this.sites){
+            if(site.siteStatus == SiteStatus.DOWN){
+                List<Variable> variables = site.getAllVariables();
+                for(Variable variable : variables){
+                    ans.put(variable.name, new Pair(site,variable.value));
+                }
+            }
+        }
+        return ans;
+    }
+
     public HashMap<String, Pair<Site,Integer>> getVariableValues(){
         HashMap<String, Pair<Site,Integer>> ans = new HashMap<>();
         for(Site site : this.sites){
