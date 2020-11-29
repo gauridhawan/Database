@@ -1,32 +1,26 @@
-// Test 17
-// T3 must wait till the commit of T2 before it reads x4
-// (because of locking), so sees 44.
-// T3 must abort though because the lock information is lost on site 4 
-// upon failure
-// T1 reads the initial value of x2 because T3 has aborted.
-
-begin(T3)
-begin(T1)
-begin(T2)
-W(T3,x2,22)
-W(T2,x3,44)
-R(T3,x3)
-end(T2)
+fail(2)
 fail(4)
-end(T3)
+beginRO(T1)
+R(T1,x1)
 R(T1,x2)
+recover(2)
+recover(4)
+begin(T2)
+W(T2,x3,3)
+end(T2)
+R(T1,x3)
 end(T1)
 dump()
 
-// T2 commits
-// x3: 44
-// T3 aborts
 // x2: 20
+// x1: 10
+// T2 commits
+// x3: 30
 // T1 commits
 // site 1- x2:20 x4:40 x6:60 x8:80 x10:100 x12:120 x14:140 x16:160 x18:180 x20:200
 // site 2- x1:10 x2:20 x4:40 x6:60 x8:80 x10:100 x11:110 x12:120 x14:140 x16:160 x18:180 x20:200
 // site 3- x2:20 x4:40 x6:60 x8:80 x10:100 x12:120 x14:140 x16:160 x18:180 x20:200
-// site 4- x2:20 x3:44 x4:40 x6:60 x8:80 x10:100 x12:120 x13:130 x14:140 x16:160 x18:180 x20:200
+// site 4- x2:20 x3:3 x4:40 x6:60 x8:80 x10:100 x12:120 x13:130 x14:140 x16:160 x18:180 x20:200
 // site 5- x2:20 x4:40 x6:60 x8:80 x10:100 x12:120 x14:140 x16:160 x18:180 x20:200
 // site 6- x2:20 x4:40 x5:50 x6:60 x8:80 x10:100 x12:120 x14:140 x15:150 x16:160 x18:180 x20:200
 // site 7- x2:20 x4:40 x6:60 x8:80 x10:100 x12:120 x14:140 x16:160 x18:180 x20:200
