@@ -61,8 +61,9 @@ public class DataManager {
             this.lockTable.setLock(transaction, variable, lockType);
             return true;
         }
+        // TODO: FIX THIS
         else{
-            this.lockTable.setLock(transaction, variable, lockType);
+          //  this.lockTable.setLock(transaction, variable, lockType);
             //System.out.println("Transaction " + transaction.name + " did not get " + lockType +" on Variable " + variable.name);
             return false;
         }
