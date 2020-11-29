@@ -31,8 +31,8 @@ public class TransactionManager {
         }
         if(!transaction.isReadOnly()){
             for(Pair<Site, Integer> siteAccessed : transaction.getSitesAccessed()){
-                //System.out.println(transactionId +" "+ siteAccessed.key.lastFailedTime +" "+siteAccessed.value);
-                if(siteAccessed.key.getLastFailedTime() > siteAccessed.value){
+                //System.out.println(transactionId +" "+ siteAccessed.key.index + " " + siteAccessed.key.lastFailedTime +" "+siteAccessed.value);
+                if(siteAccessed.key.getLastFailedTime() >= siteAccessed.value){
                     // transaction cannot go forward since it failed since the transaction started
                     //System.out.println(transactionId +" "+siteAccessed.getLastFailedTime()+" "+transaction.getStartTime());
                     transaction.setTransactionStatus(TransactionStatus.ABORTED);
@@ -195,6 +195,15 @@ public class TransactionManager {
                     }
                 }
                 this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.put(variable, ans);
+                Queue<Lock> locks1 = this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.waitingLocks.getOrDefault(variable, new LinkedList<>());
+                Queue<Lock> ans1 = new LinkedList<>();
+                for(Lock lock : locks1){
+                    //System.out.println("Locks : " + transactionId + " " + lock.transactionId +" "+ lock.lockType);
+                    if(!lock.transactionId.equals(transaction.name)) {
+                        ans1.add(lock);
+                    }
+                }
+                this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.waitingLocks.put(variable, ans1);
             }
         }
     }
@@ -244,6 +253,7 @@ public class TransactionManager {
             }
             uncommittedVars.put(variable,new Pair<>(value,sitesToBeUpdated));
             transaction.variablesAccessed.add(variable);
+            //System.out.println("Got write lock" + transactionId);
             return true;
         }
         else{
