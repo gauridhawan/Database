@@ -5,14 +5,14 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String args[]) throws FileNotFoundException {
-        for (int t = 1; t<22;t++) {
-            System.out.println("###### TEST "+ t +" ###########");
+        //for (int t = 1; t<22;t++) {
+            //System.out.println("###### TEST "+ t +" ###########");
             SiteManager siteManager = new SiteManager(10, 20);
             TransactionManager transactionManager = new TransactionManager();
             DBReader dbReader = new DBReader("../testcases/test2.txt", false);
             int time = 0;
             File file = new File("/Users/kunalkhatri/Desktop/Semester3/ADB/Porject/Database/testcases/" +
-                    "test_script_"+t+".txt");
+                    "inputs/test29.in");
 
             Scanner fileReader = new Scanner(file);
             while (fileReader.hasNextLine()) {
@@ -25,8 +25,8 @@ public class Main {
                 instruction.timestamp = time;
                 transactionManager.tick(instruction);
             }
-            System.out.println("\n\n");
-        }
+            //System.out.println("\n\n");
+        //}
     }
 }
 

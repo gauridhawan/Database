@@ -51,6 +51,7 @@ public class ResourceAllocationGraph {
         //System.out.println("Cycles -> " + transactionsInCycle);
         if(isCyclePresent && transactionsInCycle.size() >= 1 && transactionsInCycle.get(0).size() > 0){
             removeCycle(transactionMap, transactionsInCycle);
+            detectDeadlock(transactionMap);
         }
 
     }

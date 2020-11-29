@@ -29,6 +29,16 @@ public class TransactionManager {
         if(transaction.getTransactionStatus() == TransactionStatus.ABORTED){
             return false;
         }
+        if(transaction.isReadOnly()){
+            List<Pair<Transaction,String>> updated = new ArrayList<>();
+            for(Pair<Transaction, String> ROTransaction : waitingReadOnly){
+                if(!ROTransaction.key.name.equals(transactionId)){
+                    updated.add(ROTransaction);
+                }
+            }
+            waitingReadOnly.clear();
+            waitingReadOnly.addAll(updated);
+        }
         if(!transaction.isReadOnly()){
             for(Pair<Site, Integer> siteAccessed : transaction.getSitesAccessed()){
                 //System.out.println(transactionId +" "+ siteAccessed.key.index + " " + siteAccessed.key.lastFailedTime +" "+siteAccessed.value);
@@ -78,10 +88,15 @@ public class TransactionManager {
         Transaction transaction = createTransaction(transactionId, timestamp);
         transaction.setReadOnly(true);
         HashMap<String, Pair<Site,Integer>> variableValueMap = this.siteManager.getVariableValues();
+        HashMap<String, Pair<Site,Integer>> variableValueMap2 = this.siteManager.getOddVariableValues();
         //System.out.println(variableValueMap);
         HashMap<String, Integer> variableValueMap1 = new HashMap<>();
         for(String str : variableValueMap.keySet()){
             variableValueMap1.put(str, variableValueMap.get(str).value);
+        }
+        for(String str : variableValueMap2.keySet()){
+            if(!variableValueMap.containsKey(str))
+                variableValueMap1.put(str, variableValueMap2.get(str).value);
         }
         transaction.setCommittedValues(variableValueMap1);
         transactionMap.put(transactionId,transaction);
@@ -105,8 +120,23 @@ public class TransactionManager {
             Map<String, Integer> variableValueAtTransactionStart = transaction.getCommittedValues();
             //System.out.println(variableValueAtTransactionStart);
             if(variableValueAtTransactionStart.containsKey(variable)){
-                printVariableValue(variable, variableValueAtTransactionStart.get(variable));
-                return true;
+                if(variableIndex % 2 == 1){
+                    if(this.siteManager.getSite(variableIndex%10 + 1).siteStatus != SiteStatus.DOWN){
+                        printVariableValue(variable, variableValueAtTransactionStart.get(variable));
+                        return true;
+                    }
+                    else{
+                        if(transaction.transactionStatus != TransactionStatus.WAITING) {
+                            transaction.setTransactionStatus(TransactionStatus.WAITING);
+                            waitingReadOnly.add(new Pair(transaction, variable));
+                        }
+                        return false;
+                    }
+                }
+                else {
+                    printVariableValue(variable, variableValueAtTransactionStart.get(variable));
+                    return true;
+                }
             }else{
                 if(transaction.transactionStatus != TransactionStatus.WAITING) {
                     transaction.setTransactionStatus(TransactionStatus.WAITING);
@@ -278,11 +308,17 @@ public class TransactionManager {
     }
 
     public void tryWaitingReadOnly(){
+        List<Pair<Transaction, String>> notCompleted = new ArrayList<>();
         for(Pair<Transaction, String> pair : this.waitingReadOnly){
             Transaction transaction = pair.key;
             String variable = pair.value;
-            readRequest(transaction.name, currentTimeStamp, variable);
+            boolean b = readRequest(transaction.name, currentTimeStamp, variable);
+            if(!b) {
+                notCompleted.add(pair);
+            }
         }
+        this.waitingReadOnly.clear();
+        this.waitingReadOnly.addAll(notCompleted);
     }
 
     public void tryWaitingTransactions(){
