@@ -49,9 +49,44 @@ public class ResourceAllocationGraph {
             }
         }
         //System.out.println("Cycles -> " + transactionsInCycle);
-        if(isCyclePresent && transactionsInCycle.size() >= 1 && transactionsInCycle.get(0).size() > 0){
-            removeCycle(transactionMap, transactionsInCycle);
+        if(isCyclePresent && transactionsInCycle.size() >= 1 ){
+            boolean isCycleToBeRemoved = true;
+            if(transactionsInCycle.get(0).size() == 1){
+                isCycleToBeRemoved = false;
+                // self loop, check if someone is also asking for the lock on the variable in the cycle
+                ArrayList<Pair<String,LockType>> adjList = adjMap.get(transactionsInCycle.get(0).get(0));
+                for(Pair<String,LockType> edge : adjList){
+                    ArrayList<Pair<String,LockType>> adjList2 = adjMap.get(edge.key);
+                    boolean isVariableInCycle = false;
+                    for(Pair<String,LockType> reverseEdge : adjList2){
+                        if(reverseEdge.key.equalsIgnoreCase(transactionsInCycle.get(0).get(0))){
+                            isVariableInCycle = true;
+                        }
+                    }
+
+                    if(isVariableInCycle){
+                        for(String trans : transactionMap.keySet()){
+                            if(!trans.equalsIgnoreCase(transactionsInCycle.get(0).get(0))){
+                                ArrayList<Pair<String,LockType>> otherTransAdjList = adjMap.get(trans);
+                                for(Pair<String,LockType> edge2 :  otherTransAdjList){
+                                    if(edge2.key.equalsIgnoreCase(edge.key)){
+                                        isCycleToBeRemoved = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+
+            }
+
+            if(isCycleToBeRemoved){
+                removeCycle(transactionMap, transactionsInCycle);
+            }
         }
+
 
     }
 
