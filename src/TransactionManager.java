@@ -252,6 +252,7 @@ public class TransactionManager {
                 transaction.sitesAccessed.add(new Pair<>(site,currentTimeStamp));
             }
             uncommittedVars.put(variable,new Pair<>(value,sitesToBeUpdated));
+            transaction.setUncommittedVariables(uncommittedVars);
             transaction.variablesAccessed.add(variable);
             //System.out.println("Got write lock" + transactionId);
             return true;
