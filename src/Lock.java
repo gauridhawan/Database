@@ -12,4 +12,8 @@ public class Lock {
         this.transactionId = transactionId;
         this.lockType = lockType;
     }
+
+    public String toString(){
+        return "{ " + this.transactionId +" , " + this.lockType +" }";
+    }
 }

@@ -40,31 +40,73 @@ public class DataManager {
 
     public boolean getLockOnVariable(Transaction transaction, Variable variable, LockType lockType){
         LockTable temp = this.lockTable;
-        boolean isLocked = temp.isVariableLockedByTransaction(variable, transaction, lockType);
+        boolean isLocked = temp.isVariableLockedByTransaction(variable, transaction);
         //System.out.println(isLocked +" "+temp.numberOfLocks(variable));
         if(isLocked){
-
             if(temp.isVariableWriteLocked(variable)) return true;
-
             if(temp.numberOfLocks(variable) == 1){
+                if(!temp.isVariableWaiting(variable)) {
+                    this.lockTable.setLock(transaction, variable, lockType);
+                    return true;
+                }
+                else{
+                    if(temp.containsInWaiting(transaction,variable,lockType)){
+                        this.lockTable.setLock(transaction, variable, lockType);
+                        this.lockTable.removeFromWaiting(transaction, variable, lockType);
+                        return true;
+                    }
+                    else{
+                        this.lockTable.addLock(transaction,variable,lockType);
+                        return false;
+                    }
+                }
+            }
+            else {
+                this.lockTable.addLock(transaction,variable,lockType);
+                return false;
+            }
+        }
+        else if(lockType == LockType.WRITE && !temp.isVariableLocked(variable)){
+            if(!temp.isVariableWaiting(variable)) {
                 this.lockTable.setLock(transaction, variable, lockType);
                 return true;
             }
-            else return false;
-        }
-        else if(lockType == LockType.WRITE && !temp.isVariableLocked(variable)){
-            this.lockTable.setLock(transaction, variable, lockType);
-            return true;
+            else{
+                if(temp.containsInWaiting(transaction,variable,lockType)){
+                    this.lockTable.setLock(transaction, variable, lockType);
+                    this.lockTable.removeFromWaiting(transaction, variable, lockType);
+                    return true;
+                }
+                else{
+                    this.lockTable.addLock(transaction,variable,lockType);
+                    return false;
+                }
+            }
         }
         else if(lockType == LockType.READ && !temp.isVariableWriteLocked(variable)){
             //System.out.println(this.lockTable.locks);
-            this.lockTable.setLock(transaction, variable, lockType);
-            return true;
+            if(!temp.isVariableWaiting(variable)) {
+                //System.out.println("got lock : " + transaction.name);
+                this.lockTable.setLock(transaction, variable, lockType);
+                return true;
+            }
+            else{
+                if(temp.containsInWaiting(transaction,variable,lockType)){
+                    this.lockTable.setLock(transaction, variable, lockType);
+                    this.lockTable.removeFromWaiting(transaction, variable, lockType);
+                    return true;
+                }
+                else{
+                    this.lockTable.addLock(transaction,variable,lockType);
+                    return false;
+                }
+            }
         }
         // TODO: FIX THIS
         else{
-          //  this.lockTable.setLock(transaction, variable, lockType);
-            //System.out.println("Transaction " + transaction.name + " did not get " + lockType +" on Variable " + variable.name);
+            this.lockTable.addLock(transaction, variable, lockType);
+
+            //System.out.println("Transaction " + transaction.name + " did not get " + lockType +" on Variable " + variable.name + " on Site " + this.index);
             return false;
         }
     }
