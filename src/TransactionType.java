@@ -1,3 +1,6 @@
+/**
+ * Enum for type of transaction
+ */
 public enum TransactionType {
     begin("begin"),
     beginRO("beginRO"),

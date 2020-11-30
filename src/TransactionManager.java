@@ -23,6 +23,13 @@ public class TransactionManager {
     * Otherwise the transaction can go ahead
     * If transaction has been aborted, return false
     * */
+
+    /**
+     * Method used to commit a transaction.
+     * @param transactionId of the transaction to be committed
+     * @return true if the transaction was committed successfully, false if it was aborted
+     * @author Gauri Dhawan, Kunal Khatri
+     */
     public boolean commitTransaction(String transactionId){
 
         Transaction transaction = transactionMap.get(transactionId);
@@ -68,12 +75,26 @@ public class TransactionManager {
         return true;
     }
 
+    /**
+     * Method used to start a transaction by creating a transaction object.
+     * @param transactionId of the transaction to be started
+     * @param timestamp at which the transaction was started
+     * @author Gauri Dhawan, Kunal Khatri
+     */
     public void beginTransaction(String transactionId, int timestamp){
 
         Transaction transaction = createTransaction(transactionId, timestamp);
         transactionMap.put(transactionId,transaction);
     }
 
+    /**
+     * Create a transaction object with the fields provided.
+     * @param transactionId of the transaction whose object is to be created
+     * @param timestamp at which function is called
+     * @return Transaction object created
+     * @author Gauri Dhawan, Kunal Khatri
+     * @side-effects none
+     */
     private Transaction createTransaction(String transactionId, int timestamp) {
         Transaction transaction = new Transaction();
         transaction.setName(transactionId);
@@ -85,6 +106,15 @@ public class TransactionManager {
     /*
     * TODO : Store current variable values
     * */
+
+    /**
+     * Method used to start a read-only transaction. This method will record the values of the variables when the
+     * transaction starts.
+     * @param transactionId of the transaction to be started
+     * @param timestamp at which the function is called
+     * @author Gauri Dhawan, Kunal Khatri
+     * @side-effects
+     */
     public void beginROTransaction(String transactionId, int timestamp){
         Transaction transaction = createTransaction(transactionId, timestamp);
         transaction.setReadOnly(true);
@@ -111,6 +141,17 @@ public class TransactionManager {
     *
     * TODO : update read only part
     * */
+
+    /**
+     * Method to process a read request. Based on the locks available, the method assesses whether the transaction
+     * is able to get a lock to read the variable, otherwise it moves to the waiting queue.
+     * @param transactionId of the transaction that tries to perform a read
+     * @param timestamp at which the request comes in
+     * @param variable that the transaction wants to read
+     * @return true if the transaction is able to get a read lock on the variable, false if not
+     * @author Gauri Dhawan, Kunal Khatri
+     * @side-effects
+     */
     public boolean readRequest(String transactionId, int timestamp, String variable){
         Transaction transaction = transactionMap.get(transactionId);
         int variableIndex = Integer.parseInt(variable.substring(1));
@@ -179,6 +220,14 @@ public class TransactionManager {
         }
     }
 
+    /**
+     * Method to add a transaction to a waiting queue when it is unable to attain a lock on a variable.
+     * @param variable the transaction wants to get a lock on
+     * @param transaction object that is trying to get a lock
+     * @param lockType type of lock the transaction is trying to attain
+     * @param value the transaction wants to write in case the transaction is a write transaction
+     * @author Gauri Dhawan, Kunal Khatri
+     */
     private void addToWaitingQueue(String variable, Transaction transaction, LockType lockType, int value) {
         //if(transaction.transactionStatus == TransactionStatus.WAITING) {
             if (waitingTransactionMap.containsKey(variable)) {
@@ -203,6 +252,12 @@ public class TransactionManager {
         //}
     }
 
+    /**
+     * Method to end a transaction. The method proceeds to commit the transaction and print a result based on whether
+     * the transaction was committed or aborted.
+     * @param transactionId of the transaction to be ended
+     * @author Gauri Dhawan, Kunal Khatri
+     */
     public void endTransaction(String transactionId){
         //System.out.println(transactionId);
         boolean isCommitted = commitTransaction(transactionId);
@@ -215,6 +270,10 @@ public class TransactionManager {
         }
     }
 
+    /**
+     * Method to clear the locks being held by a transaction.
+     * @param transactionId of the transaction holding the locks
+     */
     public void clearLocks(String transactionId){
         Transaction transaction = this.transactionMap.get(transactionId);
         for(Pair<Site, Integer> siteAccessed : transaction.sitesAccessed){
@@ -241,23 +300,16 @@ public class TransactionManager {
         }
     }
 
-    /*
-    public void clearLocks(String transactionId){
-        Transaction transaction = this.transactionMap.get(transactionId);
-        for(Pair<Site, Integer> siteAccessed : transaction.sitesAccessed){
-            for(String variable : transaction.variablesAccessed){
-                Queue<Lock> locks = this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.getOrDefault(variable, new LinkedList<>());
-                Queue<Lock> ans = new LinkedList<>();
-                for(Lock lock : locks){
-                    if(!lock.transactionId.equals(transaction.name)) ans.add(lock);
-                }
-                this.siteManager.getSite(siteAccessed.key.index).dataManager.lockTable.locks.put(variable, ans);
-            }
-        }
-    }
-    */
 
-
+    /**
+     * Method to process a write request. The transaction tries to acquire locks, if the lock is not acquired, the
+     * transaction is added to the waiting queue.
+     * @param transactionId of the transaction trying to write
+     * @param variable the transaction wants to update
+     * @param value the transaction wants to set
+     * @return true if the transaction is able to acquire locks, false if not
+     * @author Gauri Dhawan, Kunal Khatri
+     */
     public boolean writeRequest(String transactionId, String variable, int value){
         int variableIndex = Integer.parseInt(variable.substring(1));
         Transaction transaction = transactionMap.get(transactionId);
@@ -302,16 +354,27 @@ public class TransactionManager {
     * check deadlock before each tick
     * if deadlock, abort youngest transaction
     * */
+
+    /**
+     * Method to process all transactions and clear locks for all aborted transactions
+     * @param transactionMap containing mapping of transaction id and transaction
+     */
     public void clearAbortedTransactions(Map<String, Transaction> transactionMap){
-        for(String str : transactionMap.keySet()){
-            Transaction transaction = transactionMap.get(str);
+        for(String transactionId : transactionMap.keySet()){
+            Transaction transaction = transactionMap.get(transactionId);
             if(transaction.transactionStatus == TransactionStatus.ABORTED) {
-                clearLocks(str);
+                clearLocks(transactionId);
             }
         }
 
     }
 
+    // TODO : TO BE UPDATED
+    /**
+     * Remove waiting locks
+     * @param transactionId
+     * @param lockType
+     */
     public void clearWaitingLocks(String transactionId, LockType lockType){
         Transaction transaction = this.transactionMap.get(transactionId);
         for(Site site : this.siteManager.sites){
@@ -329,6 +392,10 @@ public class TransactionManager {
         }
     }
 
+    /**
+     *
+     * @param transactionId
+     */
     public void clearWaitingTransactions(String transactionId){
         for(String str : waitingTransactionMap.keySet()){
             Queue<Pair<Lock,Integer>> currentTransactions = new LinkedList<>();
@@ -341,13 +408,16 @@ public class TransactionManager {
         }
     }
 
+    /**
+     * Process read only transactions that are currently waiting and see if they can be completed.
+     */
     public void tryWaitingReadOnly(){
         List<Pair<Transaction, String>> notCompleted = new ArrayList<>();
         for(Pair<Transaction, String> pair : this.waitingReadOnly){
             Transaction transaction = pair.key;
             String variable = pair.value;
-            boolean b = readRequest(transaction.name, currentTimeStamp, variable);
-            if(!b) {
+            boolean isCompleted = readRequest(transaction.name, currentTimeStamp, variable);
+            if(!isCompleted) {
                 notCompleted.add(pair);
             }
         }
@@ -355,6 +425,9 @@ public class TransactionManager {
         this.waitingReadOnly.addAll(notCompleted);
     }
 
+    /**
+     * Process read write transactions that are currently waiting and see if they can be completed.
+     */
     public void tryWaitingTransactions(){
         //System.out.println(waitingTransactionMap.keySet());
         //System.out.println(waitingTransactionMap.entrySet());
@@ -390,8 +463,16 @@ public class TransactionManager {
         }
     }
 
+    /**
+     * Driver method that is executed every second. This method checks for deadlocks, tries to complete waiting transactions
+     * and clears aborted transactions. Then, based on the type of incoming instruction, calls appropriate methods to
+     * process the instruction.
+     * @param currentInstr incoming instruction
+     * @author Gauri Dhawan, Kunal Khatri
+     * @side-effects increments timestamp
+     */
     public void tick(Instruction currentInstr){
-        resourceAllocationGraph.detectDeadlock(transactionMap);
+        resourceAllocationGraph.detectAndRemoveDeadlock(transactionMap);
         clearAbortedTransactions(transactionMap);
         tryWaitingReadOnly();
         tryWaitingTransactions();
@@ -414,6 +495,12 @@ public class TransactionManager {
         currentTimeStamp++;
     }
 
+    /**
+     * Method to print out the value of a variable
+     * @param variable
+     * @param value
+     * @author Gauri Dhawan
+     */
     public void printVariableValue(String variable, int value){
         System.out.println(variable+": "+value);
     }
