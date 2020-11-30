@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * Model class for transaction
+ * Author : Gauri Dhawan, Kunal Khatri
  */
 public class Transaction {
 
@@ -28,6 +29,11 @@ public class Transaction {
 
 
 
+    /*
+    Getters and Setters for transaction class
+    Authors: Kunal Khatri, Gauri Dhawan
+    Date: November 29
+     */
     public Map<String, Integer> getCommittedValues() {
         return committedValues;
     }

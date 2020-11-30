@@ -2,6 +2,8 @@ import java.util.*;
 
 /**
  * Graph to represent what resource is being held by what transaction.
+ * @author Gauri Dhawan, Kunal Khatri
+ * Date : November 29
  */
 public class ResourceAllocationGraph {
 
@@ -17,6 +19,8 @@ public class ResourceAllocationGraph {
      * @param end of the edge, the variable on which lock is being requested
      * @param lockType type of lock being requested
      * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public void addRequestLockEdge(String start, String end, LockType lockType){
         ArrayList<Pair<String,LockType>> adjList = adjMap.getOrDefault(start, new ArrayList<>());
@@ -32,6 +36,8 @@ public class ResourceAllocationGraph {
      * @param end of the edge, the transaction that gets the lock
      * @param lockType type of lock
      * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public void addGetLockEdge(String start, String end, LockType lockType){
         // remove the request lock edge first
@@ -60,6 +66,8 @@ public class ResourceAllocationGraph {
      * Method to detect and remove a deadlock in transactions.
      * @param transactionMap containing mapping of transaction id and transaction
      * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public void detectAndRemoveDeadlock(Map<String,Transaction> transactionMap){
 
@@ -120,6 +128,8 @@ public class ResourceAllocationGraph {
      * @param transactionMap containing mapping of transaction id and transaction
      * @param transactionsInCycle list of transactions in involved in the cycle
      * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     private void removeCycle(Map<String, Transaction> transactionMap, List<List<String>> transactionsInCycle) {
         for(List<String> cycle : transactionsInCycle){
@@ -152,6 +162,8 @@ public class ResourceAllocationGraph {
      * @param transactionsInCycle if a cycle is present, this list will contain a list containing transactions in a cycle
      * @return true if a cycle is present, else false
      * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public boolean hasCycle(String currentTransaction, Map<String, Integer> visitedTransactions,
                             List<String> transactionPath,

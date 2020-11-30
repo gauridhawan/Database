@@ -1,5 +1,6 @@
 /**
  * Enum for status of lock
+ * Author : Gauri Dhawan, Kunal Khatri
  */
 public enum LockStatus {
     ALL_SITES_DOWN(0), NO_LOCK(1), GOT_LOCK(2), GOT_LOCK_RECOVERING(3);
