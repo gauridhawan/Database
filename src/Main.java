@@ -1,6 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.Scanner;
 
 /**
@@ -10,30 +8,30 @@ import java.util.Scanner;
  * side-effects : none
  */
 public class Main {
-    public static void main(String args[]) throws FileNotFoundException {
-        for (int t = 30; t<=35;t++) {
-            System.out.println("###### TEST "+ t +" ###########");
-            SiteManager siteManager = new SiteManager(10, 20);
-            TransactionManager transactionManager = new TransactionManager();
-            DBReader dbReader = new DBReader("../testcases/test2.txt", false);
-            int time = 0;
-
-            File file = new File("/Users/kunalkhatri/Desktop/Semester3/ADB/Porject/Database/testcases/" +
-                    "inputs/test" + String.format("%02d", t) + ".in");
-
-            Scanner fileReader = new Scanner(file);
-            while (fileReader.hasNextLine()) {
-                String line = fileReader.nextLine();
-                if (line.startsWith("//")) {
-                    continue;
-                }
-                time++;
-                Instruction instruction = dbReader.getNextInstruction(line);
-                instruction.timestamp = time;
-                transactionManager.tick(instruction);
-            }
-            System.out.println("\n\n");
+    static FileWriter fw ;
+    public static void main(String args[]) throws IOException {
+        SiteManager siteManager = new SiteManager(10, 20);
+        TransactionManager transactionManager = new TransactionManager();
+        DBReader dbReader = new DBReader("../testcases/test2.txt", false);
+        int time = 0;
+        Scanner scanner = new Scanner(System.in);
+        if(args.length != 0) {
+            File file = new File(args[0]);
+            scanner = new Scanner(file);
         }
+        fw = new FileWriter("output.txt");
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if (line.startsWith("//")) {
+                continue;
+            }
+            time++;
+            Instruction instruction = dbReader.getNextInstruction(line);
+            instruction.timestamp = time;
+            transactionManager.tick(instruction);
+        }
+        fw.write("\n");
+        fw.close();
     }
 }
 

@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -145,6 +146,11 @@ public class ResourceAllocationGraph {
             }
 
             System.out.println(youngestTransaction.name+" aborts");
+            try {
+                Main.fw.write(youngestTransaction.name+" aborts\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             youngestTransaction.setTransactionStatus(TransactionStatus.ABORTED);
             adjMap.remove(youngestTransaction.name);
             for(Map.Entry<String,ArrayList<Pair<String,LockType>>> entry : adjMap.entrySet()){

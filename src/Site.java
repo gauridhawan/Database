@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.*;
 
 /*
@@ -173,6 +174,11 @@ public class Site {
      */
     public void dumpSite(){
         System.out.print("site " + this.index + "- ");
+        try {
+            Main.fw.write("site " + this.index + "- ");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         TreeMap<Integer, String> variableValuesMap = new TreeMap<>();
         for(String varName : this.dataManager.variableMap.keySet()){
             Variable variable = this.dataManager.variableMap.get(varName);
@@ -180,8 +186,19 @@ public class Site {
         }
         for(Integer index : variableValuesMap.keySet()){
             System.out.print(variableValuesMap.get(index) +" ");
+            try {
+                Main.fw.write(variableValuesMap.get(index) +" ");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            Main.fw.write("\n");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         System.out.print("\n");
+
     }
 
     /*
