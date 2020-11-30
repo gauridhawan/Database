@@ -15,11 +15,14 @@ public class Main {
         DBReader dbReader = new DBReader("", false);
         int time = 0;
         Scanner scanner = new Scanner(System.in);
-        if(args.length != 0) {
+        if(args.length > 0) {
             File file = new File(args[0]);
             scanner = new Scanner(file);
         }
-        fw = new FileWriter("../outputs/output.txt");
+        if(args.length> 1) {
+            fw = new FileWriter(args[1]);
+        }
+        else fw = new FileWriter("../outputs/output.txt");
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             if (line.startsWith("//")) {
