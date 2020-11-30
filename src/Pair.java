@@ -1,3 +1,8 @@
+/**
+ * Helper class for Pair
+ * @param <U> key
+ * @param <T> value
+ */
 public class Pair<U,T> {
     U key;
     T value;
