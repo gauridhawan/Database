@@ -1,7 +1,7 @@
 import java.util.HashMap;
 
 /*
-    Author : Kunal Khatri
+    Author : Kunal Khatri, Gauri Dhawan
     this is a class for managing data on each site
     Date : December 29
     Side Effects: none
@@ -12,7 +12,7 @@ public class DataManager {
     HashMap<String, Variable> variableMap = new HashMap<>();
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this creates an object of the datamanager class
         Inputs: index of the site
         Output: void
@@ -31,7 +31,7 @@ public class DataManager {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this returns the details of the variable present on the site
         Inputs: variableName
         Output: Variable
@@ -45,7 +45,7 @@ public class DataManager {
 
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this returns the locktable of the site
         Inputs: void
         Output: Locktable
@@ -57,7 +57,7 @@ public class DataManager {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this gets a lock on a variable for a transaction
         Inputs: transaction, variable, locktype
         Output: boolean
@@ -137,7 +137,7 @@ public class DataManager {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this writes a value to a variable
         Inputs: transaction, variable, value
         Output: void

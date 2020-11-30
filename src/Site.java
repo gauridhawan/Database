@@ -1,7 +1,7 @@
 import java.util.*;
 
 /*
-    Author : Kunal Khatri
+    Author : Kunal Khatri, Gauri Dhawan
     This is the class which represents each site
     Date : December 29
     Side Effects: None
@@ -14,7 +14,7 @@ public class Site {
     HashSet<String> recoveredVariables = new HashSet<>();
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the constructor for a site
         Inputs: index of the site and the sitestatus
         Output: void
@@ -32,7 +32,7 @@ public class Site {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the constructor for a site
         Inputs: index of the site
         Output: void
@@ -50,7 +50,7 @@ public class Site {
         //System.out.println(recoveredVariables);
     }
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This returns the last time at which a site failed
         Inputs: Void
         Output: the time at which site failed
@@ -62,7 +62,7 @@ public class Site {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This method tells whether a transaction got a lock on a variable of not
         Inputs: Transaction, Variable and locktype
         Output: yes/no for lock
@@ -83,7 +83,7 @@ public class Site {
 
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This writes the variable to that site
         Inputs: transaction, variable and value to be written
         Output: true if write was successful, no otherwise
@@ -105,7 +105,7 @@ public class Site {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This sets the site status to DOWN
         Inputs: time at which site failed
         Output: void
@@ -129,7 +129,7 @@ public class Site {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This recovers the failed site, i.e, sets site status to RECOVERING
         Inputs: Void
         Output: void
@@ -148,7 +148,7 @@ public class Site {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This returns all the variables present at that site
         Inputs: Void
         Output: list of variables
@@ -164,7 +164,7 @@ public class Site {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This dumps the site
         Inputs: Void
         Output: void
@@ -185,7 +185,7 @@ public class Site {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This returns the datamanager of the site
         Inputs: Void
         Output: datamanager
