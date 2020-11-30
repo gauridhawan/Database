@@ -1,5 +1,6 @@
 /**
  * Enum for type of transaction
+ * Author : Gauri Dhawan, Kunal Khatri
  */
 public enum TransactionType {
     begin("begin"),

@@ -4,7 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.*;
 
-
+/**
+ * Transaction Manager Class
+ * Authors: Kunal Khatri, Gauri Dhawan
+ * Date: November 29
+ */
 public class TransactionManager {
 
     int numberOfSites = 10;
@@ -29,6 +33,8 @@ public class TransactionManager {
      * @param transactionId of the transaction to be committed
      * @return true if the transaction was committed successfully, false if it was aborted
      * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public boolean commitTransaction(String transactionId){
 
@@ -80,6 +86,8 @@ public class TransactionManager {
      * @param transactionId of the transaction to be started
      * @param timestamp at which the transaction was started
      * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public void beginTransaction(String transactionId, int timestamp){
 
@@ -93,7 +101,8 @@ public class TransactionManager {
      * @param timestamp at which function is called
      * @return Transaction object created
      * @author Gauri Dhawan, Kunal Khatri
-     * @side-effects none
+     * Date : November 29
+     * side-effects : none
      */
     private Transaction createTransaction(String transactionId, int timestamp) {
         Transaction transaction = new Transaction();
@@ -113,7 +122,8 @@ public class TransactionManager {
      * @param transactionId of the transaction to be started
      * @param timestamp at which the function is called
      * @author Gauri Dhawan, Kunal Khatri
-     * @side-effects
+     * Date : November 29
+     * side-effects : none
      */
     public void beginROTransaction(String transactionId, int timestamp){
         Transaction transaction = createTransaction(transactionId, timestamp);
@@ -150,7 +160,8 @@ public class TransactionManager {
      * @param variable that the transaction wants to read
      * @return true if the transaction is able to get a read lock on the variable, false if not
      * @author Gauri Dhawan, Kunal Khatri
-     * @side-effects
+     * Date : November 29
+     * side-effects : none
      */
     public boolean readRequest(String transactionId, int timestamp, String variable){
         Transaction transaction = transactionMap.get(transactionId);
@@ -227,6 +238,8 @@ public class TransactionManager {
      * @param lockType type of lock the transaction is trying to attain
      * @param value the transaction wants to write in case the transaction is a write transaction
      * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     private void addToWaitingQueue(String variable, Transaction transaction, LockType lockType, int value) {
         //if(transaction.transactionStatus == TransactionStatus.WAITING) {
@@ -257,6 +270,8 @@ public class TransactionManager {
      * the transaction was committed or aborted.
      * @param transactionId of the transaction to be ended
      * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public void endTransaction(String transactionId){
         //System.out.println(transactionId);
@@ -309,6 +324,8 @@ public class TransactionManager {
      * @param value the transaction wants to set
      * @return true if the transaction is able to acquire locks, false if not
      * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public boolean writeRequest(String transactionId, String variable, int value){
         int variableIndex = Integer.parseInt(variable.substring(1));
@@ -358,6 +375,9 @@ public class TransactionManager {
     /**
      * Method to process all transactions and clear locks for all aborted transactions
      * @param transactionMap containing mapping of transaction id and transaction
+     * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public void clearAbortedTransactions(Map<String, Transaction> transactionMap){
         for(String transactionId : transactionMap.keySet()){
@@ -374,6 +394,9 @@ public class TransactionManager {
      * Remove waiting locks
      * @param transactionId
      * @param lockType
+     * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public void clearWaitingLocks(String transactionId, LockType lockType){
         Transaction transaction = this.transactionMap.get(transactionId);
@@ -395,6 +418,9 @@ public class TransactionManager {
     /**
      *
      * @param transactionId
+     * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public void clearWaitingTransactions(String transactionId){
         for(String str : waitingTransactionMap.keySet()){
@@ -410,6 +436,9 @@ public class TransactionManager {
 
     /**
      * Process read only transactions that are currently waiting and see if they can be completed.
+     * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public void tryWaitingReadOnly(){
         List<Pair<Transaction, String>> notCompleted = new ArrayList<>();
@@ -427,6 +456,9 @@ public class TransactionManager {
 
     /**
      * Process read write transactions that are currently waiting and see if they can be completed.
+     * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public void tryWaitingTransactions(){
         //System.out.println(waitingTransactionMap.keySet());
@@ -470,6 +502,9 @@ public class TransactionManager {
      * @param currentInstr incoming instruction
      * @author Gauri Dhawan, Kunal Khatri
      * @side-effects increments timestamp
+     * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public void tick(Instruction currentInstr){
         resourceAllocationGraph.detectAndRemoveDeadlock(transactionMap);
@@ -499,7 +534,9 @@ public class TransactionManager {
      * Method to print out the value of a variable
      * @param variable
      * @param value
-     * @author Gauri Dhawan
+     * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
      */
     public void printVariableValue(String variable, int value){
         System.out.println(variable+": "+value);

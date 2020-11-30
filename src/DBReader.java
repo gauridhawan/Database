@@ -1,8 +1,22 @@
+/**
+ Author : Gauri Dhawan, Kunal Khatri
+ this is a class for reading the data
+ Date : December 29
+ Side Effects: none
+ */
 public class DBReader {
 
     String filePath;
     boolean isStdin;
 
+    /**
+     * Constructor for DBReader class
+     * @param filePath
+     * @param isStdin
+     * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
+     */
     public DBReader(String filePath, boolean isStdin) {
         this.filePath = filePath;
         this.isStdin = isStdin;
@@ -13,7 +27,8 @@ public class DBReader {
      * @param line provided in the input
      * @return an Instruction object
      * @author Gauri Dhawan, Kunal Khatri
-     * @side-effects None
+     * Date : November 29
+     * side-effects : none
      */
     public Instruction getNextInstruction(String line){
         String[] str = line.split("[\\(\\)]");

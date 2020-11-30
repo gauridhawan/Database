@@ -1,5 +1,6 @@
 /**
  * Class for instruction containing all details of an instruction
+ * @author Gauri Dhawan, Kunal Khatri
  */
 public class Instruction {
 
@@ -10,28 +11,70 @@ public class Instruction {
     int site;
     int timestamp;
 
+    /**
+     * Constructor for instruction class
+     * @author Gauri Dhawan, Kunal Khatri
+     * @param transactionType
+     */
     Instruction(TransactionType transactionType){
         this.transactionType = transactionType;
     }
 
+    /**
+     * Constructor for instruction class
+     * @param transactionType
+     * @param variableName
+     * @param value
+     * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
+     */
     Instruction(TransactionType transactionType, String variableName, int value){
         this.transactionType = transactionType;
         this.variableName = variableName;
         this.value = value;
     }
 
+    /**
+     * Constructor for instruction class
+     * @param site
+     * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
+     */
     Instruction(int site){
         this.site = site;
     }
 
+    /**
+     * Constructor for instruction class
+     * @author Gauri Dhawan, Kunal Khatri
+     * @param type
+     * @param id
+     * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
+     */
     Instruction(TransactionType type, String id){
         this.transactionType = type;
         this.transactionId = id;
     }
 
+    /**
+     * Constructor for instruction class
+     * @author Gauri Dhawan, Kunal Khatri
+     * @author Gauri Dhawan, Kunal Khatri
+     * Date : November 29
+     * side-effects : none
+     */
     public Instruction() {
     }
 
+    /*
+    Getter and Setters for Instruction class attributes
+    Authors: Kunal Khatri, Gauri Dhawan
+    Date: November 29
+     */
     public TransactionType getTransactionType() {
         return transactionType;
     }
