@@ -4,6 +4,9 @@
     Date : December 29
  */
 
+/**
+ * Model class for lock
+ */
 public class Lock {
     LockType lockType;
     Transaction transaction;

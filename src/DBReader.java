@@ -8,6 +8,13 @@ public class DBReader {
         this.isStdin = isStdin;
     }
 
+    /**
+     * Method to read the line in input file and extract values from it to create an Instruction object
+     * @param line provided in the input
+     * @return an Instruction object
+     * @author Gauri Dhawan, Kunal Khatri
+     * @side-effects None
+     */
     public Instruction getNextInstruction(String line){
         String[] str = line.split("[\\(\\)]");
         Instruction instr = new Instruction();
@@ -50,5 +57,4 @@ public class DBReader {
         return instr;
     }
 
-    //TODO PRINT_ALL_VARIABLES, PRINT_VARIABLES, PRINT_SITE
 }

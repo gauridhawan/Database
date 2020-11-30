@@ -1,5 +1,8 @@
 import java.util.*;
 
+/**
+ * Graph to represent what resource is being held by what transaction.
+ */
 public class ResourceAllocationGraph {
 
 
@@ -7,6 +10,14 @@ public class ResourceAllocationGraph {
     Set<String> transactionSet = new HashSet<>();
 
 
+    /**
+     * Method to add and edge in the graph when a transaction requests a lock on a variable. Updates the adjacency
+     * map with an edge
+     * @param start of the edge, transaction asking the lock
+     * @param end of the edge, the variable on which lock is being requested
+     * @param lockType type of lock being requested
+     * @author Gauri Dhawan, Kunal Khatri
+     */
     public void addRequestLockEdge(String start, String end, LockType lockType){
         ArrayList<Pair<String,LockType>> adjList = adjMap.getOrDefault(start, new ArrayList<>());
         adjList.add(new Pair<>(end,lockType));
@@ -14,6 +25,14 @@ public class ResourceAllocationGraph {
         transactionSet.add(start);
     }
 
+    /**
+     * Method to add an edge when a transaction receives a lock on a variable. It removes the edge added when the
+     * lock is requested and then adds a reversed edge.
+     * @param start of the edge, the variable on which lock is acquired
+     * @param end of the edge, the transaction that gets the lock
+     * @param lockType type of lock
+     * @author Gauri Dhawan, Kunal Khatri
+     */
     public void addGetLockEdge(String start, String end, LockType lockType){
         // remove the request lock edge first
         ArrayList<Pair<String,LockType>> requestedAdjList = adjMap.get(end);
@@ -37,7 +56,12 @@ public class ResourceAllocationGraph {
         adjMap.put(start,adjList);
     }
 
-    public void detectDeadlock(Map<String,Transaction> transactionMap){
+    /**
+     * Method to detect and remove a deadlock in transactions.
+     * @param transactionMap containing mapping of transaction id and transaction
+     * @author Gauri Dhawan, Kunal Khatri
+     */
+    public void detectAndRemoveDeadlock(Map<String,Transaction> transactionMap){
 
         List<List<String>> transactionsInCycle = new ArrayList<>();
         Map<String,Integer> visitedTransactions = new HashMap<>();
@@ -84,13 +108,19 @@ public class ResourceAllocationGraph {
 
             if(isCycleToBeRemoved){
                 removeCycle(transactionMap, transactionsInCycle);
-                detectDeadlock(transactionMap);
+                detectAndRemoveDeadlock(transactionMap);
             }
         }
 
 
     }
 
+    /**
+     * Method to abort the youngest transaction in a cycle.
+     * @param transactionMap containing mapping of transaction id and transaction
+     * @param transactionsInCycle list of transactions in involved in the cycle
+     * @author Gauri Dhawan, Kunal Khatri
+     */
     private void removeCycle(Map<String, Transaction> transactionMap, List<List<String>> transactionsInCycle) {
         for(List<String> cycle : transactionsInCycle){
             Transaction youngestTransaction = null;
@@ -114,6 +144,15 @@ public class ResourceAllocationGraph {
         }
     }
 
+    /**
+     * Method to detect whether a graph has a cycle or not.
+     * @param currentTransaction, transactionId of the transaction whos edges will be explored
+     * @param visitedTransactions set of transactions visited till now
+     * @param transactionPath path of transactions followed till  now
+     * @param transactionsInCycle if a cycle is present, this list will contain a list containing transactions in a cycle
+     * @return true if a cycle is present, else false
+     * @author Gauri Dhawan, Kunal Khatri
+     */
     public boolean hasCycle(String currentTransaction, Map<String, Integer> visitedTransactions,
                             List<String> transactionPath,
                     List<List<String>> transactionsInCycle){

@@ -1,3 +1,6 @@
+/**
+ * Class for instruction containing all details of an instruction
+ */
 public class Instruction {
 
     TransactionType transactionType;

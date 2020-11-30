@@ -1,3 +1,6 @@
+/**
+ * Enum for status of lock
+ */
 public enum LockStatus {
     ALL_SITES_DOWN(0), NO_LOCK(1), GOT_LOCK(2), GOT_LOCK_RECOVERING(3);
     private int lockStatus;

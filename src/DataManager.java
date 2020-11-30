@@ -1,6 +1,6 @@
 import java.util.HashMap;
 
-/*
+/**
     Author : Kunal Khatri, Gauri Dhawan
     this is a class for managing data on each site
     Date : December 29
