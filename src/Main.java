@@ -12,14 +12,14 @@ public class Main {
     public static void main(String args[]) throws IOException {
         SiteManager siteManager = new SiteManager(10, 20);
         TransactionManager transactionManager = new TransactionManager();
-        DBReader dbReader = new DBReader("../testcases/test2.txt", false);
+        DBReader dbReader = new DBReader("", false);
         int time = 0;
         Scanner scanner = new Scanner(System.in);
         if(args.length != 0) {
             File file = new File(args[0]);
             scanner = new Scanner(file);
         }
-        fw = new FileWriter("output.txt");
+        fw = new FileWriter("../outputs/output.txt");
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             if (line.startsWith("//")) {
