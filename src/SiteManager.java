@@ -1,10 +1,23 @@
 import java.util.*;
 
+/*
+    Author : Kunal Khatri
+    This is the SiteManager class which is used by the transaction manager class to manage sites
+    Date : December 29
+*/
 public class SiteManager {
     int numSites;
     int numVariables;
     List<Site> sites;
 
+    /*
+        Author : Kunal Khatri
+        This is the constructor of the Sitemanager class
+        Inputs: number of Sites, number of Variables
+        Output: Void
+        Date : December 29
+        Side Effects: None
+     */
     SiteManager(int numSites, int numVariables){
         this.numSites = numSites;
         this.numVariables = numVariables;
@@ -12,11 +25,27 @@ public class SiteManager {
         for(int i = 0; i<= numSites; i++) sites.add(new Site(i));
     }
 
+    /*
+        Author : Kunal Khatri
+        This function checks if a site with a particular index exists
+        Inputs: sideID
+        Output: boolean
+        Date : December 29
+        Side Effects: None
+     */
     public boolean ifSiteExists(int index){
         if(index > numSites) return false;
         return true;
     }
 
+    /*
+        Author : Kunal Khatri
+        This is the method which handles the operations: fail(), recover() and dump()
+        Inputs: Instruction, time
+        Output: Void
+        Date : December 29
+        Side Effects: None
+     */
     public void tick(Instruction instruction, int time){
         if(instruction.transactionType == TransactionType.fail){
             this.fail(instruction.site, time);
@@ -31,6 +60,14 @@ public class SiteManager {
         }
     }
 
+    /*
+        Author : Kunal Khatri
+        This is the method which returns the odd variables since they aren't the replicated variables
+        Inputs: None
+        Output: List of odd variables per site
+        Date : December 29
+        Side Effects: None
+     */
     public HashMap<String, Pair<Site,Integer>> getOddVariableValues(){
 
         HashMap<String, Pair<Site,Integer>> ans = new HashMap<>();
@@ -45,6 +82,14 @@ public class SiteManager {
         return ans;
     }
 
+    /*
+        Author : Kunal Khatri
+        This is the method which returns all the variables
+        Inputs: None
+        Output: List of all variables per site
+        Date : December 29
+        Side Effects: None
+     */
     public HashMap<String, Pair<Site,Integer>> getVariableValues(){
         HashMap<String, Pair<Site,Integer>> ans = new HashMap<>();
         for(Site site : this.sites){
@@ -66,6 +111,14 @@ public class SiteManager {
         return ans;
     }
 
+    /*
+        Author : Kunal Khatri
+        This is the method which returns the site with the corresponding index
+        Inputs: index of the site
+        Output: Site
+        Date : December 29
+        Side Effects: None
+     */
     public Site getSite(int index){
         if(ifSiteExists(index)){
             return sites.get(index);
@@ -73,6 +126,14 @@ public class SiteManager {
         return null;
     }
 
+    /*
+        Author : Kunal Khatri
+        This is the method which returns all the sites with the corresponding variable
+        Inputs: index of the variable
+        Output: list of sites
+        Date : December 29
+        Side Effects: None
+     */
     public List<Site> getSites(int value){
         List<Site> ans = new ArrayList<>();
         if(value == -1){
@@ -85,6 +146,14 @@ public class SiteManager {
     }
 
 
+    /*
+        Author : Kunal Khatri
+        This is the method which returns the site and value of the variable if the transaction gets a lock on that variable
+        Inputs: Transaction, variable and locktype
+        Output: Site on which it got lock and the value of the variable at that site
+        Date : December 29
+        Side Effects: Adds lock to waiting queue if the transaction doesn't get a lock on the variable
+     */
     public Pair<Site, Integer> getLock(Transaction transaction, int variable, LockType lockType){
         int value = Variable.getSites(variable);
         List<Site> sites = this.getSites(value);
@@ -129,20 +198,32 @@ public class SiteManager {
         return new Pair(sites.get(0),LockStatus.GOT_LOCK.getLockStatus());
     }
 
+    /*
+        Author : Kunal Khatri
+        This is the method which fails a site at a particular time
+        Inputs: index of the site and the current time
+        Output: void
+        Date : December 29
+        Side Effects: None
+     */
     void fail(int id, int time){
         if(this.ifSiteExists(id)){
             sites.get(id).failSite(time);
         }
     }
 
+    /*
+        Author : Kunal Khatri
+        This is the method which recovers a site
+        Inputs: index of the site
+        Output: void
+        Date : December 29
+        Side Effects: None
+     */
     void recover(int id){
         if(this.ifSiteExists(id)){
             sites.get(id).recover();
         }
-    }
-
-    public void clearLocks(){
-
     }
 
 }

@@ -1,9 +1,23 @@
 import java.util.*;
 
+/*
+    Author : Kunal Khatri
+    This is the locktable class which is local to each site
+    Date : December 29
+    Side Effects: None
+ */
 public class LockTable {
     HashMap<String, Queue<Lock>> locks = new HashMap<>();
     HashMap<String, Queue<Lock>> waitingLocks = new HashMap<>();
 
+    /*
+        Author : Kunal Khatri
+        This returns the number of locks on a variable
+        Inputs: variable
+        Output: the number of locks present on that variable
+        Date : December 29
+        Side Effects: None
+     */
     public int numberOfLocks(Variable variable){
         if(locks.containsKey(variable.name)){
             return locks.get(variable.name).size();
@@ -11,6 +25,14 @@ public class LockTable {
         else return 0;
     }
 
+    /*
+        Author : Kunal Khatri
+        This returns if the transaction is waiting for a lock on a variable or not
+        Inputs: transaction, variable and locktype
+        Output: yes/no
+        Date : December 29
+        Side Effects: None
+     */
     public boolean containsInWaiting(Transaction transaction, Variable variable, LockType lockType){
         Queue<Lock> existingLocks = waitingLocks.getOrDefault(variable.name, new LinkedList<>());
         if(existingLocks.size() == 0) return false;
@@ -21,6 +43,14 @@ public class LockTable {
         return false;
     }
 
+    /*
+        Author : Kunal Khatri
+        This removes the transaction from the waiting queue of the variable
+        Inputs: transaction, variable, locktype
+        Output: void
+        Date : December 29
+        Side Effects: removes from the waiting queue
+     */
     public void removeFromWaiting(Transaction transaction, Variable variable, LockType lockType){
         if(containsInWaiting(transaction, variable, lockType)) {
 
@@ -32,6 +62,14 @@ public class LockTable {
         }
     }
 
+    /*
+        Author : Kunal Khatri
+        This sets a lock on a variable for a transaction
+        Inputs: transaction, variable, locktype
+        Output: void
+        Date : December 29
+        Side Effects: adds lock to the variable
+     */
     public void setLock(Transaction transaction, Variable variable, LockType lockType){
         Lock lock = new Lock(transaction.name, lockType);
         Queue<Lock> existingLocks = locks.getOrDefault(variable.name, new LinkedList<>());
@@ -42,6 +80,14 @@ public class LockTable {
         locks.put(variable.name,existingLocks);
     }
 
+    /*
+        Author : Kunal Khatri
+        This adds lock to the waiting queue of the variable
+        Inputs: transaction, variable, locktype
+        Output: void
+        Date : December 29
+        Side Effects: adds lock to the waiting queue
+     */
     public void addLock(Transaction transaction, Variable variable, LockType lockType){
         Lock lock = new Lock(transaction.name, lockType);
         Queue<Lock> waiting = waitingLocks.getOrDefault(variable.name, new LinkedList<>());
@@ -54,6 +100,14 @@ public class LockTable {
         waitingLocks.put(variable.name,waiting);
     }
 
+    /*
+        Author : Kunal Khatri
+        this checks if a variable is locked
+        Inputs: variable
+        Output: yes/no
+        Date : December 29
+        Side Effects: none
+     */
     public boolean isVariableLocked(Variable variable){
         if(locks.containsKey(variable.name)){
             if(locks.get(variable.name).size() == 0) return false;
@@ -62,6 +116,14 @@ public class LockTable {
         return false;
     }
 
+    /*
+        Author : Kunal Khatri
+        this checks if there is a transaction waiting for a lock on a variable is locked
+        Inputs: variable
+        Output: yes/no
+        Date : December 29
+        Side Effects: none
+     */
     public boolean isVariableWaiting(Variable variable){
         if(waitingLocks.containsKey(variable.name)){
             if(waitingLocks.get(variable.name).size() == 0) return false;
@@ -70,6 +132,14 @@ public class LockTable {
         return false;
     }
 
+    /*
+        Author : Kunal Khatri
+        this checks if a variable is write locked
+        Inputs: variable
+        Output: yes/no
+        Date : December 29
+        Side Effects: none
+     */
     public boolean isVariableWriteLocked(Variable variable){
         if(isVariableLocked(variable)){
             Queue<Lock> queue = locks.get(variable.name);
@@ -81,6 +151,14 @@ public class LockTable {
         return false;
     }
 
+    /*
+        Author : Kunal Khatri
+        this checks if a variable is read locked
+        Inputs: variable
+        Output: yes/no
+        Date : December 29
+        Side Effects: none
+     */
     public boolean isVariableReadLocked(Variable variable){
         if(isVariableLocked(variable)){
             Lock lock = locks.get(variable.name).peek();
@@ -90,10 +168,15 @@ public class LockTable {
         return false;
     }
 
-    public void freeLocks(Variable variable){
-        locks.remove(variable.name);
-    }
 
+    /*
+        Author : Kunal Khatri
+        this frees all the locks on a variable
+        Inputs: variable
+        Output: yes/no
+        Date : December 29
+        Side Effects: none
+     */
     public boolean clearVariableLock(Variable variable, Lock lock){
         if(locks.containsKey(variable.name)){
             Queue<Lock> tempQueue = locks.get(variable.name);
@@ -105,6 +188,14 @@ public class LockTable {
         return false;
     }
 
+    /*
+        Author : Kunal Khatri
+        this checks if the variable is locked by a transaction with a particular locktype
+        Inputs: variable, transaction, locktype
+        Output: boolean
+        Date : December 29
+        Side Effects: none
+     */
     public boolean isVariableLockedByTransaction(Variable variable, Transaction transaction, LockType lockType){
         if(locks.containsKey(variable.name)){
             Queue<Lock> tempQueue = locks.get(variable.name);
@@ -116,6 +207,14 @@ public class LockTable {
         return false;
     }
 
+    /*
+        Author : Kunal Khatri
+        this checks if the variable is locked by a transaction
+        Inputs: variable, transaction
+        Output: boolean
+        Date : December 29
+        Side Effects: none
+     */
     public boolean isVariableLockedByTransaction(Variable variable, Transaction transaction){
         if(locks.containsKey(variable.name)){
             Queue<Lock> tempQueue = locks.get(variable.name);

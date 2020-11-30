@@ -1,5 +1,11 @@
 import java.util.*;
 
+/*
+    Author : Kunal Khatri
+    This is the class which represents each site
+    Date : December 29
+    Side Effects: None
+ */
 public class Site {
     int index;
     int lastFailedTime;
@@ -7,6 +13,14 @@ public class Site {
     DataManager dataManager;
     HashSet<String> recoveredVariables = new HashSet<>();
 
+    /*
+        Author : Kunal Khatri
+        This is the constructor for a site
+        Inputs: index of the site and the sitestatus
+        Output: void
+        Date : December 29
+        Side Effects: None
+     */
     Site(int index, SiteStatus siteStatus){
         this.index = index;
         this.siteStatus = siteStatus;
@@ -17,6 +31,14 @@ public class Site {
         }
     }
 
+    /*
+        Author : Kunal Khatri
+        This is the constructor for a site
+        Inputs: index of the site
+        Output: void
+        Date : December 29
+        Side Effects: sets the status of site to UP
+     */
     Site(int index){
         this.index = index;
         this.siteStatus = SiteStatus.UP;
@@ -27,30 +49,26 @@ public class Site {
         }
         //System.out.println(recoveredVariables);
     }
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
+    /*
+        Author : Kunal Khatri
+        This returns the last time at which a site failed
+        Inputs: Void
+        Output: the time at which site failed
+        Date : December 29
+        Side Effects: None
+     */
     public int getLastFailedTime() {
         return lastFailedTime;
     }
 
-    public void setLastFailedTime(int lastFailedTime) {
-        this.lastFailedTime = lastFailedTime;
-    }
-
-    public SiteStatus getSiteStatus() {
-        return siteStatus;
-    }
-
-    public void setSiteStatus(SiteStatus siteStatus) {
-        this.siteStatus = siteStatus;
-    }
-
+    /*
+        Author : Kunal Khatri
+        This method tells whether a transaction got a lock on a variable of not
+        Inputs: Transaction, Variable and locktype
+        Output: yes/no for lock
+        Date : December 29
+        Side Effects: Gives the lock or puts lock in waiting queue
+     */
     public boolean getLock(Transaction transaction, Variable variable, LockType lockType){
         if(this.dataManager.getLockOnVariable(transaction, variable, lockType)){
             this.recoveredVariables.add(variable.name);
@@ -63,10 +81,15 @@ public class Site {
         return false;
     }
 
-    public void clearLock(Variable variable, Lock lock){
-        this.dataManager.clearLock(lock, variable);
-    }
 
+    /*
+        Author : Kunal Khatri
+        This writes the variable to that site
+        Inputs: transaction, variable and value to be written
+        Output: true if write was successful, no otherwise
+        Date : December 29
+        Side Effects: None
+     */
     public boolean writeVariable(Transaction transaction, Variable variable, int value){
         //System.out.println(siteStatus +" "+ variable.name);
         // removing check on recovered variables since it is only required in the case of read request
@@ -81,6 +104,14 @@ public class Site {
         return false;
     }
 
+    /*
+        Author : Kunal Khatri
+        This sets the site status to DOWN
+        Inputs: time at which site failed
+        Output: void
+        Date : December 29
+        Side Effects: None
+     */
     public void failSite(int time){
         this.siteStatus = SiteStatus.DOWN;
         this.recoveredVariables = new HashSet<>();
@@ -97,6 +128,14 @@ public class Site {
         //}
     }
 
+    /*
+        Author : Kunal Khatri
+        This recovers the failed site, i.e, sets site status to RECOVERING
+        Inputs: Void
+        Output: void
+        Date : December 29
+        Side Effects: None
+     */
     public void recover(){
         for(String string : this.dataManager.variableMap.keySet()){
             int index = Integer.parseInt(string.substring(1));
@@ -108,6 +147,14 @@ public class Site {
         //System.out.println("Recovered Vairables : " + this.recoveredVariables);
     }
 
+    /*
+        Author : Kunal Khatri
+        This returns all the variables present at that site
+        Inputs: Void
+        Output: list of variables
+        Date : December 29
+        Side Effects: None
+     */
     public List<Variable> getAllVariables(){
         List<Variable> lst = new ArrayList<>();
         for(String str : this.dataManager.variableMap.keySet()){
@@ -116,7 +163,14 @@ public class Site {
         return lst;
     }
 
-    //TODO : Complete this!
+    /*
+        Author : Kunal Khatri
+        This dumps the site
+        Inputs: Void
+        Output: void
+        Date : December 29
+        Side Effects: Prints each variable and its value at the site
+     */
     public void dumpSite(){
         System.out.print("site " + this.index + "- ");
         TreeMap<Integer, String> variableValuesMap = new TreeMap<>();
@@ -130,11 +184,16 @@ public class Site {
         System.out.print("\n");
     }
 
+    /*
+        Author : Kunal Khatri
+        This returns the datamanager of the site
+        Inputs: Void
+        Output: datamanager
+        Date : December 29
+        Side Effects: None
+     */
     public DataManager getDataManager() {
         return dataManager;
     }
 
-    public void setDataManager(DataManager dataManager) {
-        this.dataManager = dataManager;
-    }
 }

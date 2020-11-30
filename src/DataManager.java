@@ -1,10 +1,24 @@
 import java.util.HashMap;
 
+/*
+    Author : Kunal Khatri
+    this is a class for managing data on each site
+    Date : December 29
+    Side Effects: none
+ */
 public class DataManager {
     LockTable lockTable;
     int index;
     HashMap<String, Variable> variableMap = new HashMap<>();
 
+    /*
+        Author : Kunal Khatri
+        this creates an object of the datamanager class
+        Inputs: index of the site
+        Output: void
+        Date : December 29
+        Side Effects: none
+     */
     DataManager(int index){
         this.index = index;
         this.lockTable = new LockTable();
@@ -16,28 +30,40 @@ public class DataManager {
         }
     }
 
-    public void addVariable(String name, Variable variable){
-        variableMap.put(name, variable);
-    }
-
+    /*
+        Author : Kunal Khatri
+        this returns the details of the variable present on the site
+        Inputs: variableName
+        Output: Variable
+        Date : December 29
+        Side Effects: none
+     */
     public Variable getVariable(String name){
         if(variableMap.containsKey(name)) return variableMap.get(name);
         else return null;
     }
 
-    public boolean hasVariable(String name){
-        if(variableMap.containsKey(name)) return true;
-        return false;
-    }
 
-    public void clearLock(Lock lock, Variable variable){
-        this.lockTable.clearVariableLock(variable, lock);
-    }
-
+    /*
+        Author : Kunal Khatri
+        this returns the locktable of the site
+        Inputs: void
+        Output: Locktable
+        Date : December 29
+        Side Effects: none
+     */
     public LockTable getLockTable(){
         return this.lockTable;
     }
 
+    /*
+        Author : Kunal Khatri
+        this gets a lock on a variable for a transaction
+        Inputs: transaction, variable, locktype
+        Output: boolean
+        Date : December 29
+        Side Effects: adds lock to a variable
+     */
     public boolean getLockOnVariable(Transaction transaction, Variable variable, LockType lockType){
         LockTable temp = this.lockTable;
         boolean isLocked = temp.isVariableLockedByTransaction(variable, transaction);
@@ -102,7 +128,6 @@ public class DataManager {
                 }
             }
         }
-        // TODO: FIX THIS
         else{
             this.lockTable.addLock(transaction, variable, lockType);
 
@@ -111,6 +136,14 @@ public class DataManager {
         }
     }
 
+    /*
+        Author : Kunal Khatri
+        this writes a value to a variable
+        Inputs: transaction, variable, value
+        Output: void
+        Date : December 29
+        Side Effects: none
+     */
     public void writeValueToVariable(Transaction transaction, Variable variable, int value){
         //if(this.lockTable.isVariableLockedByTransaction(variable, transaction, LockType.WRITE)){
             //System.out.println("DataManager, writeValueToVariable -> " + value);
