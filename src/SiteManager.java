@@ -1,7 +1,7 @@
 import java.util.*;
 
 /*
-    Author : Kunal Khatri
+    Author : Kunal Khatri, Gauri Dhawan
     This is the SiteManager class which is used by the transaction manager class to manage sites
     Date : December 29
 */
@@ -11,7 +11,7 @@ public class SiteManager {
     List<Site> sites;
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the constructor of the Sitemanager class
         Inputs: number of Sites, number of Variables
         Output: Void
@@ -26,7 +26,7 @@ public class SiteManager {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This function checks if a site with a particular index exists
         Inputs: sideID
         Output: boolean
@@ -39,7 +39,7 @@ public class SiteManager {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the method which handles the operations: fail(), recover() and dump()
         Inputs: Instruction, time
         Output: Void
@@ -61,7 +61,7 @@ public class SiteManager {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the method which returns the odd variables since they aren't the replicated variables
         Inputs: None
         Output: List of odd variables per site
@@ -83,7 +83,7 @@ public class SiteManager {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the method which returns all the variables
         Inputs: None
         Output: List of all variables per site
@@ -112,7 +112,7 @@ public class SiteManager {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the method which returns the site with the corresponding index
         Inputs: index of the site
         Output: Site
@@ -127,7 +127,7 @@ public class SiteManager {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the method which returns all the sites with the corresponding variable
         Inputs: index of the variable
         Output: list of sites
@@ -147,7 +147,7 @@ public class SiteManager {
 
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the method which returns the site and value of the variable if the transaction gets a lock on that variable
         Inputs: Transaction, variable and locktype
         Output: Site on which it got lock and the value of the variable at that site
@@ -199,7 +199,7 @@ public class SiteManager {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the method which fails a site at a particular time
         Inputs: index of the site and the current time
         Output: void
@@ -213,7 +213,7 @@ public class SiteManager {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the method which recovers a site
         Inputs: index of the site
         Output: void

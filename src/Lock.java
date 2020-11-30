@@ -1,5 +1,5 @@
 /*
-    Author : Kunal Khatri
+    Author : Kunal Khatri, Gauri Dhawan
     This class corresponds to a Lock that is used by the transactions
     Date : December 29
  */
@@ -10,7 +10,7 @@ public class Lock {
     String transactionId;
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the constructor of the lock class
         Inputs: Transaction, LockType
         Output: Void
@@ -24,7 +24,7 @@ public class Lock {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the constructor of the lock class
         Inputs: Transaction Name, LockType
         Output: Void
@@ -37,7 +37,7 @@ public class Lock {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This is the toString of the lock class
         Inputs: None
         Output: String

@@ -1,7 +1,7 @@
 
 
 /*
-    Author : Kunal Khatri
+    Author : Kunal Khatri, Gauri Dhawan
     this is a class for a variable
     Date : December 29
     Side Effects: none
@@ -14,7 +14,7 @@ public class Variable{
     int currentSite;
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this creates an object of the variable class
         Inputs: name, value
         Output: void
@@ -28,7 +28,7 @@ public class Variable{
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this creates an object of the variable class
         Inputs: name, value and site
         Output: void
@@ -43,7 +43,7 @@ public class Variable{
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this returns the site on which the variable is present
         Inputs: index of the variable
         Output: integer ( -1 if variable present on each site )

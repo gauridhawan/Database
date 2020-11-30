@@ -1,7 +1,7 @@
 import java.util.*;
 
 /*
-    Author : Kunal Khatri
+    Author : Kunal Khatri, Gauri Dhawan
     This is the locktable class which is local to each site
     Date : December 29
     Side Effects: None
@@ -11,7 +11,7 @@ public class LockTable {
     HashMap<String, Queue<Lock>> waitingLocks = new HashMap<>();
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This returns the number of locks on a variable
         Inputs: variable
         Output: the number of locks present on that variable
@@ -26,7 +26,7 @@ public class LockTable {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This returns if the transaction is waiting for a lock on a variable or not
         Inputs: transaction, variable and locktype
         Output: yes/no
@@ -44,7 +44,7 @@ public class LockTable {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This removes the transaction from the waiting queue of the variable
         Inputs: transaction, variable, locktype
         Output: void
@@ -63,7 +63,7 @@ public class LockTable {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This sets a lock on a variable for a transaction
         Inputs: transaction, variable, locktype
         Output: void
@@ -81,7 +81,7 @@ public class LockTable {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         This adds lock to the waiting queue of the variable
         Inputs: transaction, variable, locktype
         Output: void
@@ -101,7 +101,7 @@ public class LockTable {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this checks if a variable is locked
         Inputs: variable
         Output: yes/no
@@ -117,7 +117,7 @@ public class LockTable {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this checks if there is a transaction waiting for a lock on a variable is locked
         Inputs: variable
         Output: yes/no
@@ -133,7 +133,7 @@ public class LockTable {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this checks if a variable is write locked
         Inputs: variable
         Output: yes/no
@@ -152,7 +152,7 @@ public class LockTable {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this checks if a variable is read locked
         Inputs: variable
         Output: yes/no
@@ -170,7 +170,7 @@ public class LockTable {
 
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this frees all the locks on a variable
         Inputs: variable
         Output: yes/no
@@ -189,7 +189,7 @@ public class LockTable {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this checks if the variable is locked by a transaction with a particular locktype
         Inputs: variable, transaction, locktype
         Output: boolean
@@ -208,7 +208,7 @@ public class LockTable {
     }
 
     /*
-        Author : Kunal Khatri
+        Author : Kunal Khatri, Gauri Dhawan
         this checks if the variable is locked by a transaction
         Inputs: variable, transaction
         Output: boolean
