@@ -3,8 +3,14 @@
 This is the term project for Advanced Database Management Systems course offered by Prof. Dannis Shasha during Fall 2020
 
 # How to Run the reprozip file:
+### MacOS
+reprounzip vagrant setup adb.rpz ~/testAdbFinal <br> 
+reprounzip vagrant run ~/testAdbFinal
 
-# File structure after unzipping:
+### Linux
+reprounzip directory setup adbFinal.rpz ~/adbFinal <br> 
+reprounzip directory run ~/adbFinal
+
 
 # How to Check the output:
 
