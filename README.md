@@ -4,26 +4,27 @@ This is the term project for Advanced Database Management Systems course offered
 
 # How to Run the reprozip file:
 ## MacOS
-reprounzip vagrant setup adb.rpz ~/testAdbFinal <br> 
-reprounzip vagrant run ~/testAdbFinal
+```reprounzip vagrant setup adb_gd_kk.rpz ~/testAdbFinal  ```<br>
+``` reprounzip vagrant run ~/testAdbFinal``` 
 
 ## Linux
-reprounzip directory setup adbFinal.rpz ~/adbFinal <br> 
-reprounzip directory run ~/adbFinal
+```reprounzip directory setup adb_gd_kk.rpz ~/testAdbFinal  ```<br>
+```reprounzip directory run ~/testAdbFinal```<br>
 
-## Input Arguments
-- To provide input via file, you can provide the filepath as the first argument.
-- To get output in a particular file, you can provide the filepath as the second argument
-- To provide input via stdin, don't pass in any argument as inputfile. Note that in this case, you won't be able to store output to a particular file.
+## Input and Output Arguments
 
-### Example
-- java -jar Database.jar <input_file_path> <output_file_path>
+### Providing input file 
+- To provide input via file, you can change the argument in the .rpz by using the following command <br>
+```reprounzip vagrant upload ~/testAdbFinal <input-file-path>:arg3```
+  
+### Getting the output 
+- To get output in a file(file will be arg4 in the current direcotry), use the following command <br>
+```reprounzip vagrant download ~/finalAdbMac arg4 ```
+
+- To print the output  <br>
+```reprounzip vagrant download ~/finalAdbMac arg4:```
 
 
-# How to Check the output:
-
-- The output always gets printed to stdout
-- If the output file path isn't given as a command line argument, the output file gets automatically stored in outputs folder as output.txt
 
 ## Output Structure:
 
