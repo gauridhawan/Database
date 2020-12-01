@@ -73,3 +73,6 @@ fabric.properties
 
 #.class files
 src/*.class
+*.class
+*.sol
+*.xml
