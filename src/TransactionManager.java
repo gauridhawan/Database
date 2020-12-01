@@ -1,4 +1,5 @@
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -280,8 +281,18 @@ public class TransactionManager {
         this.clearWaitingTransactions(transactionId);
         if(isCommitted){
             System.out.println(transactionId+" commits");
+            try {
+                Main.fw.write(transactionId+" commits\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }else{
             System.out.println(transactionId+" aborts");
+            try {
+                Main.fw.write(transactionId+" aborts\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -540,6 +551,11 @@ public class TransactionManager {
      */
     public void printVariableValue(String variable, int value){
         System.out.println(variable+": "+value);
+        try {
+            Main.fw.write(variable+": "+value +"\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
