@@ -12,12 +12,12 @@ reprounzip directory setup adbFinal.rpz ~/adbFinal <br>
 reprounzip directory run ~/adbFinal
 
 ## Input Arguments
-- To provide input via file, ???
-- To get output in a particular file, please provide the 
+- To provide input via file, you can provide the filepath as the first argument.
+- To get output in a particular file, you can provide the filepath as the second argument
 - To provide input via stdin, don't pass in any argument as inputfile. Note that in this case, you won't be able to store output to a particular file.
 
 ### Example
-- 
+- java -jar Database.jar <input_file_path> <output_file_path>
 
 
 # How to Check the output:
