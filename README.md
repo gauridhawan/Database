@@ -17,7 +17,8 @@ This is the term project for Advanced Database Management Systems course offered
 - To provide input via file, you can change the argument in the .rpz by using the following command <br>
 ```reprounzip vagrant upload ~/testAdbFinal <input-file-path>:arg3```
   
-### Getting the output 
+### Downloading the output 
+The output is always printed in the stdout. In case you want to download it in a file, follow the commands given below. 
 - To get output in a file(file will be arg4 in the current direcotry), use the following command <br>
 ```reprounzip vagrant download ~/finalAdbMac arg4 ```
 
